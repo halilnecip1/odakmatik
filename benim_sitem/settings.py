@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'student',
     'newsletter',
     'exercises',
-    'whitenoise.runserver_nostatic',
+    
     'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
