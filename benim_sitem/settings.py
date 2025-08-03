@@ -5,7 +5,7 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-
+import dj_database_url
 LOGIN_URL = '/kullanici/kayit/'  # senin giriş yaptığın URL neyse onu yaz
 
 

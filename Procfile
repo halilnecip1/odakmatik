@@ -1,0 +1,1 @@
+web: gunicorn benim_sitem.wsgi:application
