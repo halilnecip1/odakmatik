@@ -1,1 +1,14 @@
 .env
+# .gitignore dosyanızda şu satırların olduğundan emin olun:
+venv/
+*.pyc
+__pycache__/
+.env
+db.sqlite3
+.DS_Store
+staticfiles/  # collectstatic ile oluşacak statik dosyaların git'e eklenmemesi için
+mediafiles/   # kullanıcı yüklemelerinin git'e eklenmemesi için
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

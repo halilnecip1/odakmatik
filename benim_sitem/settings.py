@@ -19,7 +19,8 @@ SECRET_KEY = 'django-insecure-w%kx756c8$^v2g%p6l9=yjlq1ea46hp8jbn)ogkvp$ygt*p+1a
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['3.121.41.76',
+ALLOWED_HOSTS = ['odakmatik-env-v2.eba-vsch2ygp.eu-central-1.elasticbeanstalk.com',
+                 '3.121.41.76',
     'localhost',
     '127.0.0.1',
     '192.168.1.134',]
