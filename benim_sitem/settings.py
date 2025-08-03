@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     'newsletter',
     'exercises',
     
-    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 MIDDLEWARE = [
