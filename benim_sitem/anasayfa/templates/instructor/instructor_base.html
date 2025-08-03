@@ -1,0 +1,389 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Eğitmen Paneli{% endblock title %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    {# BURAYA YENİ EKLENEN HEAD BLOĞU BAŞLANGICI #}
+    {% block head %}
+    <style>
+        /* Sidebar rengi için özel stil */
+        .sidebar {
+            background-color: #1a202c; /* Koyu lacivert/mavi tonları */
+            /* Fixed konumlandırma burada uygulanır */
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 40; /* Diğer elementlerin üzerine gelmesini sağlar */
+            display: flex; /* İçeriği dikey olarak sıralamak için flex kullanırız */
+            flex-direction: column;
+        }
+
+        /* Küçük ekranlarda (md breakpoint öncesi) sidebar'ı gizlemek için */
+        @media (max-width: 767px) { /* Tailwind'in 'md' breakpoint'i genellikle 768px'tir */
+            .sidebar {
+                display: none; /* Mobil cihazlarda sidebar'ı tamamen gizle */
+            }
+        }
+        /* Orta ve büyük ekranlarda sidebar'ın görünür olmasını sağla */
+        @media (min-width: 768px) {
+            .sidebar {
+                display: flex; /* Flex olarak göster */
+            }
+        }
+
+        /* Toast mesajlar için stil */
+        .toast-container {
+            position: fixed;
+            top: 5rem; /* BURAYI DÜZELTTİK: Navbar'ın altına inmesi için değeri artırdık */
+            right: 1rem;
+            z-index: 1000; /* Diğer her şeyin üstünde olması için */
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem; /* Mesajlar arası boşluk */
+        }
+        .toast-message {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            opacity: 1;
+            transition: opacity 0.3s ease-in-out;
+            width: 300px; /* Genişlik sabitleyelim */
+        }
+        .toast-message.hide {
+            opacity: 0;
+        }
+        .toast-message.success {
+            background-color: #d1fae5; /* green-100 */
+            color: #065f46; /* green-800 */
+            border: 1px solid #a7f3d0; /* green-200 */
+        }
+        .toast-message.error {
+            background-color: #fee2e2; /* red-100 */
+            color: #991b1b; /* red-800 */
+            border: 1px solid #fecaca; /* red-200 */
+        }
+        .toast-message.warning {
+            background-color: #fffbeb; /* yellow-100 */
+            color: #92400e; /* yellow-800 */
+            border: 1px solid #fcd34d; /* yellow-200 */
+        }
+        .toast-message.info {
+            background-color: #dbeafe; /* blue-100 */
+            color: #1e40af; /* blue-800 */
+            border: 1px solid #bfdbfe; /* blue-200 */
+        }
+        .toast-close-button {
+            background: none;
+            border: none;
+            color: inherit;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-left: 0.5rem;
+            line-height: 1;
+        }
+
+        /* Canlı Derslerim Sekmesi Stilleri (Yeni Eklendi) */
+        #canli-derslerim-content .container.mt-4 {
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #canli-derslerim-content h2 {
+            color: #333;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        #canli-derslerim-content .list-group {
+            margin-top: 10px;
+        }
+
+        #canli-derslerim-content .list-group-item {
+            border: 1px solid #ddd;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fff;
+            transition: background-color 0.3s ease;
+        }
+
+        #canli-derslerim-content .list-group-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        #canli-derslerim-content .list-group-item .d-flex {
+            flex-grow: 1;
+        }
+
+        #canli-derslerim-content .list-group-item h5 {
+            font-size: 1.1rem;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        #canli-derslerim-content .list-group-item small {
+            color: #777;
+            font-size: 0.9rem;
+        }
+
+        #canli-derslerim-content .list-group-item p {
+            color: #666;
+            margin-top: 5px;
+            font-size: 0.95rem;
+        }
+
+        #canli-derslerim-content .list-group-item strong {
+            font-weight: bold;
+            color: #337ab7; /* Örnek mavi renk */
+        }
+
+        #canli-derslerim-content p.empty-message {
+            color: #777;
+            font-style: italic;
+            text-align: center; /* Ortalamak için */
+            padding: 20px;
+            border: 1px dashed #ccc;
+            border-radius: 5px;
+            background-color: #fcfcfc;
+        }
+
+        /* Canlı Ders Planla Sekmesi Stilleri (Yeni Eklendi) */
+        #canli-ders-planla-content .container.my-5 {
+            padding: 30px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-top: 0 !important; /* Üstteki marjini kaldırır, divin içine daha iyi oturur */
+            margin-bottom: 0 !important; /* Alttaki marjini kaldırır */
+        }
+
+        #canli-ders-planla-content .card-header.bg-primary {
+            background-color: #007bff !important; /* Daha belirgin bir mavi */
+            color: white;
+            border-radius: 6px 6px 0 0;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        #canli-ders-planla-content .card-title.h4 {
+            font-size: 1.5rem;
+            margin-bottom: 0;
+        }
+
+        #canli-ders-planla-content .card-body {
+            padding: 25px;
+            background-color: #fff;
+            border-radius: 0 0 6px 6px;
+            border: 1px solid #ddd;
+        }
+
+        #canli-ders-planla-content .mb-4 .form-label {
+            font-weight: bold;
+            color: #555;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        #canli-ders-planla-content .mb-4 input.form-control,
+        #canli-ders-planla-content .mb-4 select.form-control,
+        #canli-ders-planla-content .mb-4 textarea.form-control {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #495057;
+            background-color: #fff;
+            background-clip: padding-box;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            box-sizing: border-box; /* Padding'in genişliği etkilememesi için */
+        }
+
+        #canli-ders-planla-content .mb-4 .form-text {
+            font-size: 0.875rem;
+            color: #6c757d;
+            display: block;
+            margin-top: 0.25rem;
+        }
+
+        #canli-ders-planla-content .mb-4 .invalid-feedback {
+            color: #dc3545;
+            font-size: 0.875rem;
+            display: block;
+            margin-top: 0.25rem;
+        }
+
+        #canli-ders-planla-content hr.my-4 {
+            border-top: 1px solid #eee;
+            margin: 2rem 0;
+        }
+
+        #canli-ders-planla-content .d-grid.gap-2 button.btn-primary {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 0.25rem;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            transition: background-color 0.15s ease-in-out;
+        }
+
+        #canli-ders-planla-content .d-grid.gap-2 button.btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        #canli-ders-planla-content .d-grid.gap-2 a.btn-secondary {
+            color: #6c757d;
+            background-color: #e2e6ea;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, color 0.15s ease-in-out;
+        }
+
+        #canli-ders-planla-content .d-grid.gap-2 a.btn-secondary:hover {
+            background-color: #d1d9df;
+            border-color: #adb5bd;
+            color: #495057;
+        }
+
+        #canli-ders-planla-content .text-center.mt-4 a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.15s ease-in-out;
+        }
+
+        #canli-ders-planla-content .text-center.mt-4 a:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+    </style>
+    {% endblock head %}
+    {# HEAD BLOĞU SONU #}
+
+</head>
+<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+
+    {% include 'instructor/instructor_navbar.html' %}
+
+    <div id="toast-container" class="toast-container"></div>
+
+    <main class="container mx-auto px-4 py-8">
+        {% block content %}
+        {% endblock content %}
+    </main>
+
+    {# Django messages'ı JSON olarak aktarma - Bu, tarayıcı tarafından JS olarak yorumlanmayacak #}
+    <script type="application/json" id="django-messages-data">
+        {% if messages %}
+            [
+            {% for message in messages %}
+                {
+                    "message": "{{ message|safe|escapejs }}", {# mesaj içeriğini güvenle JSON'a aktar #}
+                    "tags": "{{ message.tags|safe|escapejs }}" {# tag'leri güvenle JSON'a aktar #}
+                }{% if not forloop.last %},{% endif %} {# son öğe hariç virgül ekle #}
+            {% endfor %}
+            ]
+        {% else %}
+            [] {# mesaj yoksa boş dizi döndür #}
+        {% endif %}
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Profil fotoğrafı yükleme inputu için JS (Mevcut kodunuzdan)
+            const profilePictureInput = document.getElementById('profile_picture_input');
+            const fileNameSpan = document.getElementById('file_name');
+            const uploadButton = document.getElementById('upload_button');
+            const profileImagePreview = document.getElementById('profile_image_preview');
+
+            if (profilePictureInput) {
+                profilePictureInput.addEventListener('change', function() {
+                    if (this.files && this.files[0]) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            profileImagePreview.src = e.target.result;
+                        };
+                        reader.readAsDataURL(this.files[0]);
+                        fileNameSpan.textContent = this.files[0].name;
+                    } else {
+                        profileImagePreview.src = "{% static 'img/default_profile_pic.png' %}";
+                        fileNameSpan.textContent = 'Dosya seçilmedi';
+                    }
+                });
+            }
+
+            if (uploadButton) {
+                uploadButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    profilePictureInput.click();
+                });
+            }
+
+            // TOAST MESAJ SİSTEMİ İÇİN JAVASCRIPT
+            const toastContainer = document.getElementById('toast-container');
+            const messagesScriptTag = document.getElementById('django-messages-data');
+            
+            let djangoMessages = [];
+            if (messagesScriptTag) {
+                try {
+                    // JSON.parse ile mesajları alıyoruz
+                    djangoMessages = JSON.parse(messagesScriptTag.textContent);
+                } catch (e) {
+                    console.error("Mesajlar JSON parse edilirken hata oluştu:", e);
+                    // Hata durumunda boş dizi kullanmaya devam et
+                }
+            }
+
+            // Alınan mesajları toast olarak göster
+            djangoMessages.forEach(msg => {
+                showToast(msg.message, msg.tags);
+            });
+
+            function showToast(message, type = 'info', duration = 3000) { // Varsayılan süre 3 saniye
+                const toast = document.createElement('div');
+                toast.classList.add('toast-message', type);
+                
+                // Mesajın içeriğini ve kapatma butonunu ekle
+                toast.innerHTML = `
+                    <span>${message}</span>
+                    <button class="toast-close-button" onclick="this.parentElement.remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                
+                toastContainer.appendChild(toast);
+
+                // Belirli bir süre sonra mesajı gizle ve kaldır
+                setTimeout(() => {
+                    toast.classList.add('hide'); // Fade out için 'hide' sınıfını ekle
+                    // Geçiş tamamlandıktan sonra elementi kaldır
+                    toast.addEventListener('transitionend', () => {
+                        toast.remove();
+                    });
+                }, duration);
+            }
+        });
+    </script>
+</body>
+</html>

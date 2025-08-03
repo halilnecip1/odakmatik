@@ -1,0 +1,105 @@
+<!-- benim_sitem/anasayfa/templates/instructor/instructor_new_order.html -->
+{% extends 'instructor/instructor_base.html' %} {# Kendi base.html dosyanızın yolunu doğru şekilde belirtin #}
+{% load static %}
+
+{% block title %}Yeni Sipariş Oluştur{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-4"> {# py-1 yerine py-4 yapıldı, genel üst boşluğu azalttık #}
+    <h2 class="text-3xl font-bold text-gray-800 mb-4">Yeni Sipariş Oluştur</h2> {# mb-6 yerine mb-4 yapıldı, başlık alt boşluğunu azalttık #}
+
+    {# Kategori filtreleri için placeholder - Shop sayfası düzenine uygun #}
+    <div class="flex flex-wrap gap-2 mb-8 mt-4"> {# mt-4 eklendi, başlıkla kategori butonları arasına boşluk #}
+        <button class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition">Tüm Ürünler</button>
+        <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-semibold hover:bg-gray-300 transition">Setler</button>
+        <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-semibold hover:bg-gray-300 transition">Yazılım</button>
+        <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-semibold hover:bg-gray-300 transition">Oyunlar</button>
+        <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-semibold hover:bg-gray-300 transition">Kitaplar</button>
+        {# Bu butonlar şu an için sadece görseldir, filtreleme işlevi eklemek views.py'de ekstra mantık gerektirir #}
+    </div>
+
+    <div class="flex flex-col lg:flex-row gap-8">
+        <!-- Ürünler Kısmı (Sol) -->
+        <div class="lg:w-3/4 w-full">
+            <div class="bg-white rounded-lg shadow-xl p-6">
+                {% if products %}
+                    <div class="grid grid-cols-1 gap-4"> {# Tek sütunlu grid, alt alta sıralama için #}
+                        {% for product in products %}
+                        <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col md:flex-row items-center overflow-hidden border border-gray-200 p-4"> {# Ürün kartı yatay düzeni #}
+                            {# Resim için daha yatay bir container oluşturuldu #}
+                            <div class="w-40 h-24 md:w-48 md:h-32 flex-shrink-0 rounded-md mr-4 overflow-hidden"> {# Genişlik ve yükseklik ayarlandı #}
+                                {% if product.image %}
+                                    <img src="{{ product.image.url }}" class="w-full h-full object-cover" alt="{{ product.name }}"> {# Resim container'ını tamamen dolduracak #}
+                                {% else %}
+                                    <img src="{% static 'images/default_product.png' %}" class="w-full h-full object-cover" alt="Varsayılan Ürün Resmi">
+                                {% endif %}
+                            </div>
+                            
+                            <div class="flex-grow text-center md:text-left mt-4 md:mt-0"> {# Metin içeriği #}
+                                <h4 class="text-xl font-semibold text-gray-900 mb-1">{{ product.name }}</h4>
+                                {# Ürün açıklaması düz metin olarak #}
+                                <p class="text-gray-600 text-sm mb-2">{{ product.description }}</p> {# Açıklama alanı olduğu gibi gösterildi #}
+                            </div>
+                            <div class="flex flex-col items-end justify-center ml-auto pl-4"> {# Fiyat ve buton sağda, dikey ortalandı #}
+                                {% if product.original_price and product.original_price > product.price %} {# Eğer original_price varsa ve güncel fiyattan yüksekse göster #}
+                                    <p class="text-gray-500 text-lg line-through mb-0">{{ product.original_price|floatformat:2 }} TL</p> {# text-xl yerine text-lg, mb-1 yerine mb-0 yapıldı #}
+                                {% endif %}
+                                <p class="text-2xl font-bold text-green-600 mb-2">{{ product.price|floatformat:2 }} TL</p> {# text-xl yerine text-2xl yapıldı #}
+                                <form action="{% url 'instructor:add_to_cart' product.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-200 flex items-center space-x-2 text-sm">
+                                        <i class="fas fa-cart-plus"></i>
+                                        <span>Sepete Ekle</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-center text-gray-600 py-8">Şu anda satışta ürün bulunmamaktadır.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Sepetim Kısmı (Sağ) -->
+        <div class="lg:w-1/4 w-full">
+            <div class="bg-white rounded-lg shadow-xl p-6 sticky top-24"> {# sticky ile sayfa kaydırıldığında sepetin sabit kalmasını sağlar #}
+                <h3 class="text-2xl font-semibold text-gray-800 mb-6 pb-4 border-b border-gray-200">Sepetim</h3>
+                {% if cart_items %}
+                    <ul class="space-y-4 mb-6">
+                        {% for item in cart_items %}
+                            <li class="flex items-center justify-between border-b border-gray-100 pb-3">
+                                <div class="flex-1">
+                                    <h4 class="text-lg font-medium text-gray-900">{{ item.product.name }}</h4>
+                                    <p class="text-gray-500 text-sm">Adet: {{ item.quantity }}</p>
+                                </div>
+                                <span class="text-lg font-semibold text-gray-700">{{ item.subtotal|floatformat:2 }} TL</span>
+                                <form action="{% url 'instructor:remove_from_cart' item.product.id %}" method="post" class="ml-4">
+                                    {% csrf_token %}
+                                    <button type="submit" class="text-red-500 hover:text-red-700 focus:outline-none">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <div class="flex justify-between items-center border-t border-gray-200 pt-4 mt-4">
+                        <span class="text-xl font-bold text-gray-800">Toplam</span>
+                        <span class="text-2xl font-bold text-green-700">{{ cart_total|floatformat:2 }} TL</span>
+                    </div>
+                    <form action="{% url 'instructor:purchase_product' %}" method="post" class="mt-6">
+                        {% csrf_token %}
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition duration-200 w-full text-center flex items-center justify-center space-x-2">
+                            <i class="fas fa-credit-card"></i>
+                            <span>Şimdi Ödeme Yap</span>
+                        </button>
+                    </form>
+                {% else %}
+                    <p class="text-center text-gray-600 py-8">Sepetinizde ürün bulunmamaktadır.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

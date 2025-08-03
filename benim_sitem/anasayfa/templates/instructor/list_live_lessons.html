@@ -1,0 +1,23 @@
+{% extends 'instructor/instructor_base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Yaklaşan Tüm Canlı Dersler</h2>
+    <hr>
+    {% if lessons %}
+        <div class="list-group">
+            {% for lesson in lessons %}
+                <a href="{% url 'instructor:ogrenci_detay' ogrenci_id=lesson.student.id %}" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">{{ lesson.title }}</h5>
+                        <small>{{ lesson.start_time|date:"d F Y - H:i" }}</small>
+                    </div>
+                    <p class="mb-1">Öğrenci: <strong>{{ lesson.student.username }}</strong></p>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>Planlanmış bir canlı ders bulunmamaktadır.</p>
+    {% endif %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,116 @@
+<!-- benim_sitem/anasayfa/templates/instructor/my_credits.html -->
+{% extends 'instructor/instructor_base.html' %} {# Kendi base.html dosyanızın yolunu doğru şekilde belirtin #}
+{% load static %}
+
+{% block title %}Kredilerim ve Ürün Atama{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8"> {# Genel üst boşluğu artırdık #}
+    <h2 class="text-3xl font-bold text-gray-800 mb-6">Kredilerim ve Ürün Atama</h2>
+
+    {# Mesajlar instructor_base.html tarafından yönetiliyor #}
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <!-- Mevcut Kredilerim Kartı -->
+        <div class="bg-white rounded-lg shadow-xl p-6 text-center flex flex-col items-center justify-center">
+            <div class="bg-gradient-to-br from-green-400 to-green-600 p-6 rounded-full inline-flex items-center justify-center mb-4 shadow-lg">
+                <i class="fas fa-coins text-white text-5xl"></i>
+            </div>
+            <h3 class="text-2xl font-semibold text-gray-800 mb-2">Mevcut Kredilerim</h3>
+            <p class="text-6xl font-extrabold text-green-700 mb-4">{{ available_credits }}</p>
+            <p class="text-lg text-gray-600 mb-6">Kullanılabilir Ürün Krediniz</p>
+            <a href="{% url 'instructor:instructor_new_order' %}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition duration-200 flex items-center space-x-2">
+                <i class="fas fa-plus-circle"></i>
+                <span>Daha Fazla Kredi Satın Al</span>
+            </a>
+        </div>
+
+        <!-- Kredi Kullan (Öğrenciye Ürün Ata) Kartı -->
+        <div class="bg-white rounded-lg shadow-xl p-6">
+            <h3 class="text-2xl font-semibold text-gray-800 mb-6 pb-4 border-b border-gray-200">Kredi Kullan (Öğrenciye Ürün Ata)</h3>
+            
+            {% if available_credits > 0 %}
+                {# Sadece atanabilir Order objeleri (kredi birimleri) varsa formu göster #}
+                {% if available_orders_for_assignment %} 
+                    <form action="{% url 'instructor:use_credit' %}" method="post" class="space-y-5">
+                        {% csrf_token %}
+                        <div>
+                            <label for="order_to_use_select" class="block text-gray-700 text-sm font-bold mb-2">Atanacak Kredi Birimini Seçin:</label>
+                            <div class="relative">
+                                <select class="block appearance-none w-full bg-gray-100 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-blue-500" id="order_to_use_select" name="order_id" required>
+                                    <option value="">--- Kredi Birimi Seçin ---</option>
+                                    {% for order in available_orders_for_assignment %}
+                                        {# Ürün adı, adeti ve satın alma tarihi gösterilir #}
+                                        <option value="{{ order.id }}">{{ order.product.name }} ({{ order.quantity }} Adet) - Tarih: {{ order.order_date|date:"d M Y" }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="student_select" class="block text-gray-700 text-sm font-bold mb-2">Öğrenci Seçin:</label>
+                            <div class="relative">
+                                <select class="block appearance-none w-full bg-gray-100 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-blue-500" id="student_select" name="student_id" required>
+                                    <option value="">--- Öğrenci Seçin ---</option>
+                                    {% for student in students %}
+                                        <option value="{{ student.id }}">{{ student.first_name }} {{ student.last_name }} ({{ student.username }})</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition duration-200 w-full text-center flex items-center justify-center space-x-2">
+                            <i class="fas fa-arrow-right"></i>
+                            <span>Kredi Kullan ve Atama Yap</span>
+                        </button>
+                    </form>
+                {% else %}
+                    <p class="text-center text-gray-600 py-8 text-lg font-medium">Atanabilir kredi biriminiz bulunmamaktadır. Lütfen kredi satın alın.</p>
+                {% endif %}
+            {% else %}
+                <p class="text-center text-red-600 py-8 text-lg font-medium">Kredi kullanmak için yeterli krediniz bulunmamaktadır. Lütfen kredi satın alın.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <h3 class="text-2xl font-bold text-gray-800 mb-6 mt-10 pb-4 border-b border-gray-200">Atanmış Ürünler</h3>
+    {% if assigned_products %}
+    <div class="bg-white rounded-lg shadow-xl p-6">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tl-lg">Öğrenci</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Atanan Ürün</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Atama Tarihi</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tr-lg">Kullanıldı Mı?</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for assigned_product in assigned_products %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ assigned_product.student.first_name }} {{ assigned_product.student.last_name }} ({{ assigned_product.student.username }})</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ assigned_product.product.name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ assigned_product.assigned_date|date:"d M Y H:i" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            {% if assigned_product.is_used %}
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Evet</span>
+                            {% else %}
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Hayır</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+        <p class="text-center text-gray-600 py-8 alert alert-info">Henüz herhangi bir ürünü öğrencinize atamadınız.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,101 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Öğrenci Paneli{% endblock title %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Sidebar rengi için özel stil */
+        .sidebar {
+            background-color: #1a202c; /* Koyu lacivert/mavi tonları */
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 40;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Küçük ekranlarda (md breakpoint öncesi) sidebar'ı gizlemek için */
+        @media (max-width: 767px) {
+            .sidebar {
+                display: none;
+            }
+        }
+        /* Orta ve büyük ekranlarda sidebar'ın görünür olmasını sağla */
+        @media (min-width: 768px) {
+            .sidebar {
+                display: flex;
+            }
+        }
+    </style>
+
+    {# --- DÜZELTME BURADA: EKSİK OLAN BLOK EKLENDİ --- #}
+    {% block extra_css %}{% endblock extra_css %}
+
+</head>
+<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+
+    <div class="flex h-screen">
+        <div class="sidebar w-64 md:w-72 bg-gray-900 text-white py-6 px-4 shadow-lg">
+            {% include 'student/student_navbar.html' %}
+        </div>
+
+        <div class="flex-1 p-6 md:p-10 overflow-auto ml-0 md:ml-72">
+            {% if messages %}
+                <div class="mb-4">
+                    {% for message in messages %}
+                        <div class="p-4 rounded-md {% if message.tags == 'success' %}bg-green-100 text-green-700{% elif message.tags == 'error' %}bg-red-100 text-red-700{% elif message.tags == 'warning' %}bg-yellow-100 text-yellow-700{% else %}bg-blue-100 text-blue-700{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% block content %}
+            {% endblock content %}
+        </div>
+    </div>
+
+    <script>
+        // Profil fotoğrafı yükleme inputu için JS
+        document.addEventListener('DOMContentLoaded', function() {
+            const profilePictureInput = document.getElementById('profile_picture_input');
+            const fileNameSpan = document.getElementById('file_name');
+            const uploadButton = document.getElementById('upload_button');
+            const profileImagePreview = document.getElementById('profile_image_preview');
+
+            if (profilePictureInput) {
+                profilePictureInput.addEventListener('change', function() {
+                    if (this.files && this.files[0]) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            profileImagePreview.src = e.target.result;
+                        };
+                        reader.readAsDataURL(this.files[0]);
+                        fileNameSpan.textContent = this.files[0].name;
+                    } else {
+                        profileImagePreview.src = "{% static 'img/default_profile_pic.png' %}";
+                        fileNameSpan.textContent = 'Dosya seçilmedi';
+                    }
+                });
+            }
+
+            if (uploadButton) {
+                uploadButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    profilePictureInput.click();
+                });
+            }
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock extra_js %}
+
+</body>
+</html>

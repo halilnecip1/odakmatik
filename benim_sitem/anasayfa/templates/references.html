@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+    {% load static %}
+
+    {% block title %}Referanslar{% endblock %}
+
+    {% block content %}
+    <section class="references-page-section py-5 bg-light">
+        <div class="container my-5">
+            <h1 class="display-4 text-center fw-bold mb-6">Referanslarımız</h1>
+            
+            <div class="row g-4 justify-content-center">
+                {# Emin Eğitim Derneği Kartı #}
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="reference-card card h-100 border-0 shadow-sm text-center">
+                        <div class="card-body d-flex flex-column justify-content-center align-items-center p-3">
+                            <img src="{% static 'img/emin-egitim-dernegi-logo.png' %}" class="img-fluid mb-2" alt="Emin Eğitim Derneği Logo" style="max-height: 80px;">
+                            <h6 class="card-title fw-bold text-dark mb-0">Emin Eğitim Derneği</h6> {# text-primary yerine text-dark #}
+                        </div>
+                    </div>
+                </div>
+
+                {# Ebu İshak Vakfı Kartı #}
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="reference-card card h-100 border-0 shadow-sm text-center">
+                        <div class="card-body d-flex flex-column justify-content-center align-items-center p-3">
+                            <img src="{% static 'img/ebu-ishak-vakfi-logo.png' %}" class="img-fluid mb-2" alt="Ebu İshak Vakfı Logo" style="max-height: 80px;">
+                            <h6 class="card-title fw-bold text-dark mb-0">Ebu İshak Vakfı</h6> {# text-primary yerine text-dark #}
+                        </div>
+                    </div>
+                </div>
+
+                {# ... diğer referans kartları ... #}
+
+            </div>
+        </div>
+    </section>
+    {% endblock %}

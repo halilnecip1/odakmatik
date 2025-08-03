@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card shadow rounded-4 p-4">
+                <h4 class="mb-3 text-primary">Kullanıcı Bilgileri</h4>
+                <p><strong>Kullanıcı Adı:</strong> {{ user.username }}</p>
+                <p><strong>Email:</strong> {{ user.email }}</p>
+                <a href="{% url 'kullanici:profil_duzenle' %}" class="btn btn-outline-primary btn-sm mt-2">Profili Düzenle</a>
+                {# NOT: Eğer bir şifre değiştirme URL'si eklediyseniz, buraya ekleyebilirsiniz #}
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card shadow rounded-4 p-4 mb-4"> {# Eğitimler kartına mb-4 ekledim #}
+                <h4 class="mb-3 text-success">Satın Aldığın Eğitimler</h4>
+                {% if kullanici_egitimleri %}
+                    <ul class="list-group">
+                        {% for satin_alim in kullanici_egitimleri %}
+                            <li class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <strong>{{ satin_alim.egitim.baslik }}</strong>
+                                    <a href="{% url 'egitimler:egitim_detay' satin_alim.egitim.id %}" class="btn btn-sm btn-outline-success">Eğitime Git</a>
+                                </div>
+
+                                <div class="progress" style="height: 12px;">
+                                    <div class="progress-bar bg-success"
+                                         role="progressbar"
+                                         aria-valuemin="0"
+                                         aria-valuemax="100"
+                                         aria-valuenow="{{ satin_alim.ilerleme_orani|default:0 }}"
+                                         style="width: {{ satin_alim.ilerleme_orani|default:0 }}%;">
+                                    </div>
+                                </div>
+
+                                <small class="text-muted mt-1 d-block">
+                                    {{ satin_alim.ilerleme_orani|default:0 }}% tamamlandı
+                                </small>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="alert alert-info">Henüz bir eğitim satın almadınız.</div>
+                {% endif %}
+            </div>
+
+            {# YENİ EKLENECEK KISIM: Satın Alınan Kitaplar, Oyunlar ve Yazılımlar #}
+            <div class="card shadow rounded-4 p-4">
+                <h4 class="mb-3 text-info">Satın Aldığım Ürünler</h4>
+                {% if satın_alinan_kitaplar or satın_alinan_oyunlar or satın_alinan_yazilimlar %} {# Yazılımları da kontrol et #}
+                    <ul class="list-group">
+                        {# Satın Alınan Yazılımlar #}
+                        {% for satin_alim_yazilim in satın_alinan_yazilimlar %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>Yazılım:</strong> {{ satin_alim_yazilim.product.title }}
+                                </div>
+                                {% if satin_alim_yazilim.product.role == 'instructor' %}
+                                    <a href="{% url 'instructor:dashboard' %}" class="btn btn-sm btn-outline-info">Yazılıma Git</a>
+                                {% elif satin_alim_yazilim.product.role == 'student' %}
+                                    <a href="{% url 'student:dashboard' %}" class="btn btn-sm btn-outline-info">Yazılıma Git</a>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+
+                        {# Satın Alınan Kitaplar #}
+                        {% for satin_alim_kitap in satın_alinan_kitaplar %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>Kitap:</strong> {{ satin_alim_kitap.kitap.baslik }}
+                                    <br>
+                                    <small class="text-muted">Yazar: {{ satin_alim_kitap.kitap.yazar }}</small>
+                                </div>
+                                <a href="{% url 'shop:access_kitap' slug=satin_alim_kitap.kitap.slug %}" class="btn btn-sm btn-outline-info">Kitaba Git</a>
+                            </li>
+                        {% endfor %}
+
+                        {# Satın Alınan Oyunlar #}
+                        {% for satin_alim_oyun in satın_alinan_oyunlar %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>Oyun:</strong> {{ satin_alim_oyun.oyun.baslik }}
+                                    <br>
+                                    <small class="text-muted">Yapımcı: {{ satin_alim_oyun.oyun.yapimci }}</small>
+                                </div>
+                                <a href="{% url 'shop:access_oyun' slug=satin_alim_oyun.oyun.slug %}" class="btn btn-sm btn-outline-info">Oyuna Git</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="alert alert-info">Henüz bir ürün satın almadınız.</div>
+                {% endif %}
+            </div>
+            {# YENİ EKLENECEK KISIM SONU #}
+
+        </div>
+    </div>
+</div>
+{% endblock %}

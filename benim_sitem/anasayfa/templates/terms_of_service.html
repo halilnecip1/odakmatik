@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Kullanım ve Üyelik Sözleşmesi{% endblock %}
+
+{% block content %}
+<section class="terms-of-service-page-section py-5">
+    <div class="container my-5">
+        <h1 class="display-5 text-center fw-bold mb-4">KULLANIM VE ÜYELİK SÖZLEŞMESİ</h1>
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <p class="text-muted mb-3">www.odakmatik.com.tr adresli internet sitesini kullanmadan önce lütfen bu Kullanım ve Üyelik Sözleşmesini dikkatlice okuyunuz. Bu siteye erişiminiz ve kullanmanız, aşağıdaki şartları kabul ettiğiniz anlamına gelir. Eğer bu şartları kabul etmiyorsanız lütfen siteyi kullanmayınız.</p>
+
+                <h2 class="h4 fw-bold mb-3">1. Taraflar</h2>
+                <p class="text-muted mb-4">İşbu Kullanım ve Üyelik Sözleşmesi (“Sözleşme”);<br>Odakmatik (bundan sonra "Site" veya "Hizmet Sağlayıcı" olarak anılacaktır) ile<br>www.odakmatik.com.tr adresine üye olan kullanıcı (“Üye”) arasında akdedilmiştir.</p>
+
+                <h2 class="h4 fw-bold mb-3">2. Sözleşmenin Konusu</h2>
+                <p class="text-muted mb-4">Bu sözleşme, Üye'nin www.odakmatik.com.tr sitesi üzerinden sunulan hizmetlerden yararlanmasına ilişkin hak ve yükümlülüklerini düzenlemektedir.</p>
+
+                <h2 class="h4 fw-bold mb-3">3. Üyelik Koşulları</h2>
+                <ul class="list-unstyled text-muted mb-4 terms-list">
+                    <li><i class="fas fa-check-circle me-2 text-success"></i>Üye, verdiği bilgilerin doğru olduğunu ve bu bilgilerin eksik veya yanlış olması durumunda sorumluluğun kendisine ait olduğunu kabul eder.</li>
+                    <li><i class="fas fa-check-circle me-2 text-success"></i>Üyelik kişiye özeldir, başkasına devredilemez veya kullandırılamaz.</li>
+                    <li><i class="fas fa-check-circle me-2 text-success"></i>18 yaşından küçük kullanıcıların siteye ebeveyn onayı olmadan üye olmaları önerilmez.</li>
+                </ul>
+
+                <h2 class="h4 fw-bold mb-3">4. Hizmet İçeriği</h2>
+                <ul class="list-unstyled text-muted mb-4 terms-list">
+                    <li><i class="fas fa-check-circle me-2 text-success"></i>Odakmatik, çevrim içi eğitim, testler, içerikler ve diğer dijital hizmetleri sunar.</li>
+                    <li><i class="fas fa-check-circle me-2 text-success"></i>Site içeriği zaman zaman güncellenebilir, hizmetlerin kapsamı değiştirilebilir.</li>
+                </ul>
+
+                <h2 class="h4 fw-bold mb-3">5. Ücretlendirme</h2>
+                <ul class="list-unstyled text-muted mb-4 terms-list">
+                    <li><i class="fas fa-check-circle me-2 text-success"></i>Site içerisinde sunulan bazı hizmetler ücretsiz, bazıları ücretli olabilir.</li>
+                    <li><i class="fas fa-check-circle me-2 text-success"></i>Ücretli hizmetlerde, satın alma işlemi öncesinde bilgilendirme yapılır.</li>
+                    <li><i class="fas fa-check-circle me-2 text-success"></i>Alınan hizmetlerin iadesi, ilgili iade politikası kapsamında değerlendirilir.</li>
+                </ul>
+
+                <h2 class="h4 fw-bold mb-3">6. Kullanıcının Yükümlülükleri</h2>
+                <ul class="list-unstyled text-muted mb-4 terms-list">
+                    <li><i class="fas fa-check-circle me-2 text-success"></i>Kullanıcı, siteyi yasalara ve ahlaka aykırı şekilde kullanmamayı kabul eder.</li>
+                    <li><i class="fas fa-check-circle me-2 text-success"></i>Kullanıcı, başkalarının haklarını ihlal edici içerikler paylaşamaz.</li>
+                    <li><i class="fas fa-check-circle me-2 text-success"></i>Kullanıcı, site güvenliğini tehdit edici hiçbir girişimde bulunamaz.</li>
+                </ul>
+
+                <h2 class="h4 fw-bold mb-3">7. Fikri Mülkiyet Hakları</h2>
+                <ul class="list-unstyled text-muted mb-4 terms-list">
+                    <li><i class="fas fa-check-circle me-2 text-success"></i>www.odakmatik.com.tr sitesi, içeriği, tasarımı, yazılımı ve tüm bileşenleri ile birlikte Odakmatik'e aittir.</li>
+                    <li><i class="fas fa-check-circle me-2 text-success"></i>Kullanıcılar, site içeriğini kopyalayamaz, çoğaltamaz, dağıtamaz.</li>
+                </ul>
+
+                <h2 class="h4 fw-bold mb-3">8. Gizlilik</h2>
+                <p class="text-muted mb-4">Kullanıcıların kişisel verileri, <a href="{% url 'kvkk' %}" class="text-decoration-none text-info fw-bold">Gizlilik Politikası ve KVKK Aydınlatma Metni</a> çerçevesinde işlenir ve korunur.</p>
+
+                <h2 class="h4 fw-bold mb-3">9. Sözleşmenin Feshi</h2>
+                <ul class="list-unstyled text-muted mb-4 terms-list">
+                    <li><i class="fas fa-check-circle me-2 text-success"></i>Üye, dilediği zaman üyelikten ayrılabilir.</li>
+                    <li><i class="fas fa-check-circle me-2 text-success"></i>Hizmet Sağlayıcı, Üye'nin sözleşmeye aykırı hareket ettiğini tespit ederse üyeliği askıya alabilir veya sonlandırabilir.</li>
+                </ul>
+
+                <h2 class="h4 fw-bold mb-3">10. Değişiklikler</h2>
+                <ul class="list-unstyled text-muted mb-4 terms-list">
+                    <li><i class="fas fa-check-circle me-2 text-success"></i>Hizmet Sağlayıcı, bu sözleşme hükümlerini dilediği zaman güncelleyebilir.</li>
+                    <li><i class="fas fa-check-circle me-2 text-success"></i>Güncel sözleşme www.odakmatik.com.tr adresinde yayımlandığı andan itibaren geçerli olur.</li>
+                </ul>
+
+                <h2 class="h4 fw-bold mb-3">11. Yetkili Mahkeme</h2>
+                <p class="text-muted mb-4">Bu sözleşmeden doğabilecek ihtilaflarda İstanbul Mahkemeleri ve İcra Daireleri yetkilidir.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

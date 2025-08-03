@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    /* Genel sayfa içeriği için üstten boşluk */
+    .egitim-detay-container {
+        padding-top: 60px; /* Navbar ile arasına boşluk bırak */
+        padding-bottom: 40px;
+    }
+
+    /* Başlık stilini iyileştirme */
+    .egitim-detay-container h2 {
+        font-size: 2.5rem; /* Daha büyük başlık */
+        color: #333;
+        margin-bottom: 25px; /* Altına boşluk */
+        text-align: center; /* Başlığı ortala */
+    }
+
+    /* Bilgi kutuları için stil */
+    .info-box {
+        background-color: #f8f9fa; /* Hafif gri arka plan */
+        border: 1px solid #e9ecef;
+        border-radius: .5rem; /* Hafif yuvarlak köşeler */
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); /* Hafif gölge */
+    }
+
+    .info-box p {
+        margin-bottom: 10px;
+        font-size: 1.1rem;
+        color: #555;
+    }
+
+    .info-box strong {
+        color: #007bff; /* Mavi tonunda vurgu */
+    }
+
+    /* Görsel için stil */
+    .egitim-gorsel {
+        display: block;
+        margin: 0 auto 30px auto; /* Ortala ve altına boşluk */
+        border-radius: .5rem;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15); /* Daha belirgin gölge */
+    }
+
+    /* Satın alınmış ders içeriği kutusu */
+    .purchased-content-box {
+        margin-top: 30px;
+        padding: 25px;
+        border: 1px solid #007bff; /* Mavi çerçeve */
+        border-radius: .5rem;
+        background-color: #e0f2f7; /* Açık mavi arka plan */
+        box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+    }
+
+    .purchased-content-box h3 {
+        color: #007bff;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .purchased-content-box ul {
+        list-style: none; /* Liste işaretlerini kaldır */
+        padding: 0;
+    }
+
+    .purchased-content-box ul li {
+        background-color: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: .3rem;
+        padding: 15px;
+        margin-bottom: 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .purchased-content-box ul li strong a {
+        color: #333;
+        text-decoration: none;
+        font-size: 1.2rem;
+        margin-bottom: 5px;
+    }
+
+    .purchased-content-box ul li strong a:hover {
+        color: #007bff;
+    }
+
+    .purchased-content-box ul li video {
+        max-width: 100%; /* Videonun responsive olmasını sağla */
+        height: auto;
+        border-radius: .3rem;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .purchased-content-box ul li p {
+        font-size: 0.95rem;
+        color: #6c757d;
+        margin-bottom: 10px;
+    }
+
+    .purchased-content-box .badge {
+        font-size: 0.85rem;
+        padding: .5em .7em;
+    }
+
+    .purchased-content-box .btn-outline-primary {
+        margin-top: 10px;
+    }
+
+    /* Satın alma butonu */
+    .buy-button-section {
+        text-align: center;
+        margin-top: 30px;
+    }
+</style>
+
+<div class="container egitim-detay-container">
+    <div class="row">
+        <div class="col-12">
+            <h2>{{ egitim.baslik }}</h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 offset-md-3 text-center">
+            {% if egitim.gorsel %}
+                <img src="{{ egitim.gorsel.url }}" alt="{{ egitim.baslik }}" class="egitim-gorsel" style="max-width: 300px;">
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="info-box">
+                <p><strong>Açıklama:</strong> {{ egitim.aciklama }}</p>
+                <p><strong>Seviye:</strong> {{ egitim.get_seviye_display }}</p>
+                <p><strong>Süre:</strong> {{ egitim.sure }} dakika</p>
+                <p><strong>Fiyat:</strong> {{ egitim.fiyat }} TL</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8 buy-button-section">
+            {% if user.is_authenticated %}
+                {% if satin_alindi %}
+                    <p class="text-success"><em>Bu egitimi zaten satin aldiniz.</em></p>
+
+                    <div class="purchased-content-box">
+                        <h3>Satın Alınmış Ders İçeriği</h3>
+
+                        {% if dersler %}
+                            <ul>
+                                {% for ders in dersler %}
+                                    <li>
+                                        <strong>
+                                            <a href="{% url 'egitimler:ders_detay' ders.id %}">{{ ders.baslik }}</a>
+                                        </strong>
+                                        {% if ders.video_url %}
+                                            <video controls>
+                                                <source src="{{ ders.video_url }}" type="video/mp4">
+                                                Tarayıcınız video etiketini desteklemiyor.
+                                            </video>
+                                        {% endif %}
+                                        <p>{{ ders.aciklama }}</p>
+
+                                        {% if ders.id in tamamlanan_dersler %}
+                                            <span class="badge bg-success ms-2">Tamamlandı ✓</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary ms-2">Tamamlanmadı ✗</span>
+                                        {% endif %}
+
+                                        <a href="{% url 'egitimler:ders_detay' ders.id %}" class="btn btn-sm btn-outline-primary mt-1">
+                                            Derse Git
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>Bu eğitime ait ders bulunmamaktadır.</p>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <a href="{% url 'egitimler:egitim_odemesi' egitim.id %}" class="btn btn-primary btn-lg">Şimdi Satın Al</a>
+                {% endif %}
+            {% else %}
+                <p>Lütfen egitimi satin almak için <a href="{% url 'kullanici:giris' %}">giriş yapın</a>.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

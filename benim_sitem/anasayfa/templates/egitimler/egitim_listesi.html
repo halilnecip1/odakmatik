@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    /* Genel sayfa içeriği için üstten boşluk */
+    .egitimler-page-container {
+        padding-top: 60px; /* Navbar ile arasına boşluk bırak */
+        padding-bottom: 40px;
+    }
+
+    /* Başlık stilini iyileştirme */
+    .egitimler-page-container h2 {
+        font-size: 2.8rem; /* Daha büyük başlık */
+        color: #212529; /* Koyu gri renk */
+        margin-bottom: 40px; /* Altına daha fazla boşluk */
+        text-align: center; /* Başlığı ortala */
+        font-weight: 700; /* Kalın font */
+    }
+
+    /* Eğitim kartı stilini iyileştirme */
+    .egitim-card {
+        border: none; /* Kart kenarlığını kaldır */
+        border-radius: 1rem; /* Daha belirgin yuvarlak köşeler */
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* Hover efekti için geçiş */
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1); /* Hafif gölge */
+    }
+
+    .egitim-card:hover {
+        transform: translateY(-5px); /* Hafif yukarı kalkma efekti */
+        box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.2); /* Hover'da daha belirgin gölge */
+    }
+
+    .egitim-card .card-body {
+        padding: 2.25rem; /* İç boşlukları artır */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between; /* İçeriği dikeyde eşit dağıt */
+    }
+
+    .egitim-card .card-title {
+        font-size: 1.8rem; /* Kart başlık boyutu */
+        font-weight: 600;
+        margin-bottom: 1.25rem; /* Altına boşluk */
+        text-align: center; /* Başlığı ortala */
+    }
+
+    .egitim-card .card-title a {
+        color:rgb(255, 0, 0); /* Mavi renk */
+        text-decoration: none; /* Alt çizgiyi kaldır */
+    }
+
+    .egitim-card .card-title a:hover {
+        color:rgb(151, 0, 0); /* Hover'da daha koyu mavi */
+        text-decoration: underline; /* Hover'da alt çizgi ekle */
+    }
+
+    .egitim-card .card-text {
+        font-size: 1.05rem;
+        color: #495057; /* Koyu gri metin rengi */
+        line-height: 1.6;
+        text-align: center; /* Metinleri ortala */
+    }
+
+    .egitim-card .card-text strong {
+        color: #343a40; /* Kalın metinler için daha koyu renk */
+    }
+
+    .egitim-card .fw-bold {
+        font-size: 1.3rem; /* Fiyat için daha büyük font */
+        color:rgb(44, 0, 0); /* Yeşil renk */
+        margin-top: 15px; /* Üstten boşluk */
+        margin-bottom: 25px; /* Alttan boşluk */
+        text-align: center; /* Fiyatı ortala */
+    }
+
+    .egitim-card .text-success {
+        font-size: 1.1rem;
+        text-align: center; /* Mesajı ortala */
+        margin-bottom: 15px;
+    }
+
+    .egitim-card .btn-group {
+        display: flex; /* Butonları yan yana hizala */
+        gap: 10px; /* Butonlar arası boşluk */
+        flex-direction: column; /* Butonları alt alta sırala */
+    }
+
+    .egitim-card .btn {
+        padding: 12px 20px; /* Buton iç boşlukları */
+        font-size: 1.1rem;
+        border-radius: 0.5rem; /* Buton köşelerini yuvarla */
+    }
+
+    .egitim-card .btn-success {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+
+    .egitim-card .btn-success:hover {
+        background-color: #218838;
+        border-color: #1e7e34;
+    }
+
+    .egitim-card .btn-primary {
+        background-color:rgb(255, 0, 0);
+        border-color:rgb(161, 0, 0);
+    }
+
+    .egitim-card .btn-primary:hover {
+        background-color:rgb(217, 0, 0);
+        border-color:rgb(204, 0, 112);
+    }
+</style>
+
+<div class="container egitimler-page-container">
+    <div class="row">
+        <div class="col-12">
+            <h2>Eğitimlerimiz</h2> {# Başlığı biraz daha vurgulu hale getirdik #}
+        </div>
+    </div>
+
+    <div class="row justify-content-center"> {# Kartları yatayda ortala #}
+        {% for egitim in egitimler %}
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4"> {# Her eğitim için sütun tanımı #}
+            <div class="card h-100 egitim-card"> {# Kart görünümü ve yükseklik ayarı #}
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a href="{% url 'egitimler:egitim_detay' egitim.id %}">{{ egitim.baslik }}</a>
+                    </h5>
+                    <p class="card-text mb-1"><strong>Seviye:</strong> {{ egitim.get_seviye_display }}</p>
+                    <p class="card-text mb-1"><strong>Süre:</strong> {{ egitim.sure }} dakika</p>
+                    <p class="card-text fw-bold mb-3">Fiyat: {{ egitim.fiyat }} TL</p>
+
+                    <div class="mt-auto text-center"> {# Butonları alta hizala ve ortala #}
+                        {% if user.is_authenticated and egitim.id in satin_alinanlar %}
+                            <p class="text-success fw-bold">Bu eğitimi zaten aldınız.</p>
+                            <a href="{% url 'egitimler:egitim_detay' egitim.id %}" class="btn btn-success w-75">Eğitime Git</a>
+                        {% else %}
+                            <a href="{% url 'egitimler:egitim_odemesi' egitim.id %}" class="btn btn-primary w-75">Satın Al (Stripe)</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

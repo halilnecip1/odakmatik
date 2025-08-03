@@ -1,0 +1,103 @@
+{% extends 'instructor/instructor_base.html' %}
+{% load widget_tweaks %} {# Bu satırın varlığından ve doğruluğundan emin olun #}
+
+{% block title %}Eğitmen Paneli - Öğrenci Ekle{% endblock title %}
+
+{% block extra_head %}
+    <style>
+        /* Öğrenci Ekle sayfasının içeriğini navbarın altından başlatmak için stil */
+        .page-content-wrapper {
+            padding-top: 130px; /* Navbar yüksekliği (100px) + ek boşluk (30px) */
+            padding-bottom: 50px; /* Sayfanın altına da biraz boşluk */
+        }
+
+        /* Django form select ve input elemanlarına temel Tailwind stilini uygulamak için */
+        .form-input-field {
+            display: block;
+            width: 100%;
+            padding: 0.75rem 1rem; /* Daha geniş padding */
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #374151; /* Koyu gri metin */
+            background-color: #f9fafb; /* Çok hafif gri arka plan */
+            border: 1px solid #d1d5db; /* Açık gri kenarlık */
+            border-radius: 0.5rem; /* Daha yuvarlak köşeler */
+            transition: all 0.2s ease-in-out; /* Yumuşak geçişler */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+
+        .form-input-field:focus {
+            border-color: #3b82f6; /* Odaklandığında mavi kenarlık */
+            outline: 0;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5); /* Mavi gölge */
+        }
+
+        /* Select kutusu için aşağı ok ikonu (Tailwind'in kendi stilinde varsayılan ok yoktur) */
+        /* Bu kısım sadece select kutularına uygulanır ve görsel olarak daha modern bir ok sağlar */
+        select.form-input-field {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3e%3cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1.25rem 1.25rem; /* İkon boyutu */
+            padding-right: 2.5rem; /* İkonun yer açması için sağ boşluk */
+        }
+    </style>
+{% endblock extra_head %}
+
+{% block content %}
+<div class="page-content-wrapper min-h-screen bg-gray-100 flex items-center justify-center py-12">
+    <div class="max-w-xl w-full bg-white rounded-xl shadow-2xl p-8 transform hover:scale-105 transition-all duration-300 ease-in-out">
+        <h1 class="text-4xl font-extrabold text-gray-900 mb-8 text-center border-b-2 pb-4 border-blue-500">
+            Yeni Öğrenci Kaydı
+        </h1>
+
+        {% if messages %}
+            <div class="mb-6 space-y-3"> {# Daha fazla boşluk ve mesajlar arası boşluk #}
+                {% for message in messages %}
+                    <div class="p-4 rounded-lg font-medium text-base
+                        {% if message.tags == 'error' %}bg-red-50 text-red-800 border border-red-300{% endif %}
+                        {% if message.tags == 'success' %}bg-green-50 text-green-800 border border-green-300{% endif %}
+                        {% if message.tags == 'info' %}bg-blue-50 text-blue-800 border border-blue-300{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="mb-6">
+                <label for="{{ form.ogrenci.id_for_label }}" class="block text-gray-800 text-lg font-semibold mb-3">
+                    {{ form.ogrenci.label }}
+                </label>
+                {# Buradaki add_class çalışması için widget_tweaks kurulu ve yüklü olmalı! #}
+                {{ form.ogrenci|add_class:"form-input-field" }}
+                {% if form.ogrenci.errors %}
+                    <p class="text-red-600 text-sm mt-2 font-medium">{{ form.ogrenci.errors }}</p>
+                {% endif %}
+            </div>
+
+            <div class="mb-6">
+                <label for="{{ form.duration_months.id_for_label }}" class="block text-gray-800 text-lg font-semibold mb-3">
+                    {{ form.duration_months.label }}
+                </label>
+                {# Buradaki add_class çalışması için widget_tweaks kurulu ve yüklü olmalı! #}
+                {{ form.duration_months|add_class:"form-input-field" }}
+                {% if form.duration_months.errors %}
+                    <p class="text-red-600 text-sm mt-2 font-medium">{{ form.duration_months.errors }}</p>
+                {% endif %}
+                {% if form.duration_months.help_text %}
+                    <p class="text-gray-600 text-xs mt-1">{{ form.duration_months.help_text }}</p>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-blue-800 text-white py-3 px-6 rounded-lg text-lg font-bold hover:from-blue-700 hover:to-blue-900 transition-all duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg">
+                Öğrenciyi Kaydet
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock content %}

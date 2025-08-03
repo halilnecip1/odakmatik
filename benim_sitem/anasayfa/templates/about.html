@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Hakkımızda{% endblock %}
+
+{% block content %}
+    <section class="about-page-section py-1">
+        <div class="container my-5">
+            {# ... Mevcut Hakkımızda Giriş Bölümü ... #}
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <div class="about-image-wrapper pe-lg-4">
+                        <img src="{% static 'img/about-us-hero.jpg' %}" alt="Hakkımızda Görseli" class="img-fluid rounded-3 shadow-lg">
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="about-text-content ps-lg-4">
+                        <h1 class="display-4 fw-bold mb-4">Odak Matik Eğitim Platformu</h1>
+                        <p class="lead text-muted mb-4">Odak, dikkat, okuma, okuma becerileri, hızlı okuma ve okuma kültürü konularında hizmet veren, hizmet üreten veya okuma konusunda bilimsel çalışmaları hizmete dönüştüren bir eğitim platformudur.</p>
+                        <p class="text-muted mb-4">Bireysel eğitim ihtiyaçları için odak eğitimleri, hızlı okuma eğitimi, dikkat güçlendirme ve zihinsel performans gibi kişinin kendi kişisel gelişimine yönelik çözüm önerileri üretirken, Hızlı Okuma Eğitmenlik ihtiyaçlarına yönelik olarak da kişi ve kurumlara özel olarak tasarladığı çözümlerle fayda sağlamaktadır.</p>
+                        <p class="text-muted mb-0">Odak Matik Eğitim Platfromu; Oyun Terapisti Eğitimcisi Oğuzhan Gönçe tarafından, farklı disiplinlerden aldığı deneyimleri harmanlayarak yansıttığı Okuma Becerilerine yönelik bir eğitim anlayışını hizmete sunmaktadır.<br>Odak Matik bir EĞİTİM markasıdır.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {# Education Approach Section #}
+    <section class="education-approach-section py-5 bg-light">
+        <div class="container my-5">
+            <div class="row align-items-center flex-row-reverse"> {# görselin sağda olması için flex-row-reverse ekledik #}
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <div class="image-wrapper ps-lg-4">
+                        <img src="{% static 'img/education-approach.jpg' %}" alt="Eğitim Anlayışımız Görseli" class="img-fluid rounded-3 shadow-lg">
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="text-content pe-lg-4">
+                        <h2 class="display-5 fw-bold mb-4 text-primary">Eğitim Anlayışımız</h2>
+                        <p class="lead text-muted mb-3">Kolay öğrenileceğiz, <br> Zamanla ustalaşacağınız, <br> İnsan merkezli bir eğitim anlayışımız bulunmakta.</p>
+                        <p class="text-muted mb-3">Japon zanaatkarlara göre bir kişiye "usta" denilebilmesi için o kişinin kendini her alanda geçecek bir çırak yetiştirmesi ve on sene gibi bir süre o konuda çalışması gerekmektedir.</p>
+                        <p class="text-muted mb-0">Esasında bu felsefe bize en büyük yetkinliklerin istikrarlı bir şekilde pekişen, süreye yayılan, "kopyalanabilir ve öğretilebilir" olması gerektiğini göstermektedir.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {# 360 Fast Reading Trainings Section #}
+    <section class="fast-reading-trainings-section py-5">
+        <div class="container my-5">
+            <div class="row align-items-center"> {# görselin solda olması için flex-row-reverse yok #}
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <div class="image-wrapper pe-lg-4">
+                        <img src="{% static 'img/brain-training.jpg' %}" alt="360 Hızlı Okuma Eğitimleri Görseli" class="img-fluid rounded-3 shadow-lg">
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="text-content ps-lg-4">
+                        <h2 class="display-5 fw-bold mb-4 text-danger">Odak Matik:Odak ve Dikkat <br> Eğitimleri</h2>
+                        <p class="lead text-muted mb-3">Eğitmenleri ve öğrencileri ile çok sıkı bağ kuran, Güncel yöntemler ve kavramların bir araya geldiği, Kolay anlaşılabilir modüllerden oluşur ve katılımcılarını kendi yetkinliklerini pekiştirecekleri yöntemlerle donatır.</p>
+                        <p class="text-muted mb-0">Eğitimlerimizin her biri ustalık için harcanması gereken süreyi minimuma indirgeyecek bilimsel yaklaşımlar, özenle hazırlanmış müfredatlar ve uygulama çalışmaları ile oluşturulmuştur...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {% endblock %}

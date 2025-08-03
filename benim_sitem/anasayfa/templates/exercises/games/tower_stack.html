@@ -1,0 +1,27 @@
+{% extends 'student/student_base.html' %}
+{% load static %}
+
+{% block title %}{{ game.name }}{% endblock title %}
+
+{% block content %}
+<div class="bg-white p-6 rounded-2xl shadow-lg w-full max-w-5xl mx-auto text-center">
+    <h1 class="text-4xl font-bold text-gray-800 mb-2">{{ game.name }}</h1>
+    <p class="text-gray-500 mb-6">{{ game.description }}</p>
+
+    <div id="game-container" class="w-full flex justify-center items-center bg-gray-900 rounded-lg" style="min-height: 550px;">
+        
+        {# --- OYUNU GÖMMEK İÇİN GEREKLİ OLAN TEK SATIR --- #}
+        <iframe 
+            src="https://www.gameflare.com/embed/tower-bloxx/" 
+            frameborder="0" 
+            scrolling="no" 
+            width="636" 
+            height="515" 
+            allowfullscreen>
+        </iframe>
+        {# --- IFRAME SONU --- #}
+
+    </div>
+    
+</div>
+{% endblock content %}

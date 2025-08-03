@@ -1,0 +1,1036 @@
+{% extends 'instructor/instructor_base.html' %}
+{% load static %}
+{% load tz %} {# timezonewear aware datetimeler için #}
+
+{% block title %}Eğitmen Paneli - {{ ogrenci.username }} Detayları{% endblock title %}
+
+{% block head %}
+    {{ block.super }} {# instructor_base.html'den gelen head içeriğini koru #}
+    <style>
+        /* Canlı Derslerim Sekmesi Stilleri */
+        #canli-derslerim-content .container.mt-4 {
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #canli-derslerim-content h2 {
+            color: #333;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        #canli-derslerim-content .list-group {
+            margin-top: 10px;
+        }
+
+        #canli-derslerim-content .list-group-item {
+            border: 1px solid #ddd;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fff;
+            transition: background-color 0.3s ease;
+        }
+
+        #canli-derslerim-content .list-group-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        #canli-derslerim-content .list-group-item .d-flex {
+            flex-grow: 1;
+        }
+
+        #canli-derslerim-content .list-group-item h5 {
+            font-size: 1.1rem;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        #canli-derslerim-content .list-group-item small {
+            color: #777;
+            font-size: 0.9rem;
+        }
+
+        #canli-derslerim-content .list-group-item p {
+            color: #666;
+            margin-top: 5px;
+            font-size: 0.95rem;
+        }
+
+        #canli-derslerim-content .list-group-item strong {
+            font-weight: bold;
+            color: #337ab7; /* Örnek mavi renk */
+        }
+
+        #canli-derslerim-content p.empty-message {
+            color: #777;
+            font-style: italic;
+            text-align: center; /* Ortalamak için */
+            padding: 20px;
+            border: 1px dashed #ccc;
+            border-radius: 5px;
+            background-color: #fcfcfc;
+        }
+
+        /* Canlı Ders Planla Sekmesi Stilleri */
+        #canli-ders-planla-content .container.my-5 {
+            padding: 30px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #canli-ders-planla-content .card-header.bg-primary {
+            background-color: #007bff !important; /* Daha belirgin bir mavi */
+            color: white;
+            border-radius: 6px 6px 0 0;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        #canli-ders-planla-content .card-title.h4 {
+            font-size: 1.5rem;
+            margin-bottom: 0;
+        }
+
+        #canli-ders-planla-content .card-body {
+            padding: 25px;
+            background-color: #fff;
+            border-radius: 0 0 6px 6px;
+            border: 1px solid #ddd;
+        }
+
+        #canli-ders-planla-content .mb-4 .form-label {
+            font-weight: bold;
+            color: #555;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        #canli-ders-planla-content .mb-4 input.form-control,
+        #canli-ders-planla-content .mb-4 select.form-control,
+        #canli-ders-planla-content .mb-4 textarea.form-control {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #495057;
+            background-color: #fff;
+            background-clip: padding-box;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            box-sizing: border-box; /* Padding'in genişliği etkilememesi için */
+        }
+
+        #canli-ders-planla-content .mb-4 .form-text {
+            font-size: 0.875rem;
+            color: #6c757d;
+            display: block;
+            margin-top: 0.25rem;
+        }
+
+        #canli-ders-planla-content .mb-4 .invalid-feedback {
+            color: #dc3545;
+            font-size: 0.875rem;
+            display: block;
+            margin-top: 0.25rem;
+        }
+
+        #canli-ders-planla-content hr.my-4 {
+            border-top: 1px solid #eee;
+            margin: 2rem 0;
+        }
+
+        #canli-ders-planla-content .d-grid.gap-2 button.btn-primary {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 0.25rem;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            transition: background-color 0.15s ease-in-out;
+        }
+
+        #canli-ders-planla-content .d-grid.gap-2 button.btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        #canli-ders-planla-content .d-grid.gap-2 a.btn-secondary {
+            color: #6c757d;
+            background-color: #e2e6ea;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, color 0.15s ease-in-out;
+        }
+
+        #canli-ders-planla-content .d-grid.gap-2 a.btn-secondary:hover {
+            background-color: #d1d9df;
+            border-color: #adb5bd;
+            color: #495057;
+        }
+
+        #canli-ders-planla-content .text-center.mt-4 a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.15s ease-in-out;
+        }
+
+        #canli-ders-planla-content .text-center.mt-4 a:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+    </style>
+{% endblock head %}
+
+{% block content %}
+    <div class="container mx-auto px-4 py-1">
+        <div class="flex items-center justify-between mb-6">
+            <a href="{% url 'instructor:ogrencilerim_listesi' %}" class="inline-flex items-center text-blue-600 hover:text-blue-800 transition duration-200">
+                <i class="fas fa-arrow-left mr-2"></i> Öğrencilerime Dön
+            </a>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-md mb-6">
+            <div class="border-b border-gray-200 sticky top-0 bg-white z-10">
+                <nav class="-mb-px flex space-x-8 px-6 py-4" aria-label="Tabs">
+                    <a href="#ana-ekran" class="tab-link border-b-2 border-transparent py-2 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 active-tab" data-target="ana-ekran-content">Ana Ekran</a>
+                    <a href="#tanima" class="tab-link border-b-2 border-transparent py-2 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300" data-target="tanima-content">Tanıma</a>
+                    <a href="#planlama" class="tab-link border-b-2 border-transparent py-2 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300" data-target="planlama-content">Planlama</a> 
+                    <a href="#takip" class="tab-link border-b-2 border-transparent py-2 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300" data-target="takip-content">Takip</a>
+                    
+                    {# YENİ EKLENEN SEKMELER BURADA #}
+                    <a href="#canli-derslerim" class="tab-link border-b-2 border-transparent py-2 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300" data-target="canli-derslerim-content">
+                        <i class="fas fa-list-alt me-2"></i>Canlı Derslerim
+                    </a>
+                    <a href="#canli-ders-planla" class="tab-link border-b-2 border-transparent py-2 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300" data-target="canli-ders-planla-content">
+                        <i class="fas fa-video me-2"></i>Canlı Ders Planla
+                    </a>
+                    {# YENİ EKLENEN SEKMELERİN SONU #}
+
+                </nav>
+            </div>
+
+            <div class="p-6">
+                <div id="ana-ekran-content" class="tab-content hidden">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Genel Bilgiler</h3>
+                    <div class="bg-gray-50 p-4 rounded-md">
+                        <p class="text-gray-700"><strong>Adı Soyadı:</strong> 
+                            {% if ogrenci.first_name and ogrenci.last_name %}
+                                {{ ogrenci.first_name }} {{ ogrenci.last_name }}
+                            {% elif ogrenci.first_name %}
+                                {{ ogrenci.first_name }}
+                            {% elif ogrenci.last_name %}
+                                {{ ogrenci.last_name }}
+                            {% else %}
+                                Bilinmiyor
+                            {% endif %}
+                            <p class="text-gray-700"><strong>E-posta:</strong> {{ ogrenci.email }}</p>
+                            <p class="text-gray-700"><strong>Kayıt Tarihi:</strong> {{ ogrenci.date_joined|date:"d M Y H:i" }}</p>
+                            {% if stats %}
+                                <hr class="my-6"> {# Ayırıcı çizgi #}
+                                {% include 'partials/_student_stats.html' with stats=stats %}
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+
+                <div id="tanima-content" class="tab-content hidden">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Okuma Değerlendirme Raporu Oluştur</h3>                    
+                </div>
+
+                <div id="planlama-content" class="tab-content hidden">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Atanan Kurslar ve Planlama</h3>
+                    
+                    <button id="openAssignCourseModal" class="mb-6 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-200">
+                        + YENİ KURS ATA
+                    </button>
+
+                    <div class="overflow-x-auto bg-gray-50 rounded-lg p-4">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tl-lg">KURS</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">TOPLAM GÜN</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ATANMA TARİHİ</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SON GÜNCELLEME TARİHİ</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tr-lg">İŞLEMLER</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% if assigned_courses %}
+                                    {% for assigned_course in assigned_courses %}
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ assigned_course.course.title }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ assigned_course.course.total_days }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ assigned_course.assigned_at|date:"d M Y H:i" }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ assigned_course.last_updated|date:"d M Y H:i" }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                <form action="{% url 'instructor:unassign_course_from_student' assigned_course.id %}" method="post" onsubmit="return confirm('Bu kursu kaldırmak istediğinizden emin misiniz?');" class="inline">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="text-red-600 hover:text-red-900 ml-4">Sil</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="6" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">Henüz atanmış kurs bulunmuyor.</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="takip-content" class="tab-content hidden">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Takip ve Analiz</h3>
+
+                    <div class="overflow-x-auto bg-gray-50 rounded-lg p-4">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tl-lg">KURS</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">TOPLAM GÜN</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tr-lg">BİTİRİLEN GÜN</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% if assigned_courses %}
+                                    {% for assigned_course in assigned_courses %}
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ assigned_course.course.title }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ assigned_course.course.total_days }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ assigned_course.completed_days }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="6" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">Henüz atanmış kurs bulunmuyor.</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {# YENİ EKLENEN CANLI DERSLERİM İÇERİĞİ #}
+                <div id="canli-derslerim-content" class="tab-content hidden">
+                    <div class="container mt-4">
+                        <h2>Yaklaşan Tüm Canlı Dersler</h2>
+                        <hr>
+                        {% if lessons %}
+                            <div class="list-group">
+                                {% for lesson in lessons %}
+                                    {# Django template'ında student.id'ye erişim. ogrenci_id yerine lesson.student.id kullanıyoruz #}
+                                    <a href="{% url 'instructor:ogrenci_detay' ogrenci_id=lesson.student.id %}" class="list-group-item list-group-item-action">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h5 class="mb-1">{{ lesson.title }}</h5>
+                                            <small>{{ lesson.start_time|date:"d F Y - H:i" }}</small>
+                                        </div>
+                                        <p class="mb-1">Öğrenci: <strong>{{ lesson.student.username }}</strong></p>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="empty-message">Planlanmış bir canlı ders bulunmamaktadır.</p>
+                        {% endif %}
+                    </div>
+                </div>
+                {# CANLI DERSLERİM İÇERİĞİ SONU #}
+
+                {# YENİ EKLENEN CANLI DERS PLANLA FORMU İÇERİĞİ #}
+                <div id="canli-ders-planla-content" class="tab-content hidden">
+                    <div class="container my-5">
+                        <div class="row justify-content-center">
+                            <div class="col-md-8 col-lg-7">
+                                <div class="card shadow-lg border-0">
+                                    <div class="card-header bg-primary p-4">
+                                        <h2 class="card-title h4 mb-0 d-flex align-items-center text-white">
+                                            <i class="fas fa-video me-3"></i>
+                                            <span>
+                                                <span class="fw-bold">{{ ogrenci.username }}</span> için Canlı Ders Planla
+                                            </span>
+                                        </h2>
+                                    </div>
+                                    <div class="card-body p-4 p-md-5">
+                                        <form method="post" novalidate>
+                                            {% csrf_token %}
+
+                                            {% for field in plan_lesson_form %}
+                                                <div class="mb-4">
+                                                    <label for="{{ field.id_for_label }}" class="form-label fw-semibold">{{ field.label }}</label>
+                                                    {{ field }}
+                                                    {% if field.help_text %}
+                                                        <small class="form-text text-muted d-block mt-1">{{ field.help_text }}</small>
+                                                    {% endif %}
+                                                    {% for error in field.errors %}
+                                                        <div class="invalid-feedback d-block mt-1">
+                                                            {{ error }}
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            {% endfor %}
+
+                                            <hr class="my-4">
+
+                                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                                <a href="#canli-derslerim" class="btn btn-secondary px-4 tab-link" data-target="canli-derslerim-content">
+                                                    <i class="fas fa-times me-2"></i>İptal
+                                                </a>
+                                                <button type="submit" name="plan_lesson_submit" class="btn btn-primary px-4">
+                                                    <i class="fas fa-check me-2"></i>Dersi Planla
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+
+                                <div class="text-center mt-4">
+                                    <a href="{% url 'instructor:ogrenci_detay' ogrenci_id=ogrenci.id %}" class="text-decoration-none text-muted">
+                                        <i class="fas fa-arrow-left me-1"></i> Öğrenci Detayına Geri Dön
+                                    </a>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {# CANLI DERS PLANLA FORMU İÇERİĞİ SONU #}
+
+            </div>
+        </div>
+    </div>
+
+    {# MODAL: Assign Course #}
+    <div id="assignCourseModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3 text-center">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">Öğrenciye Kurs Ata</h3>
+                <div class="mt-2 px-7 py-3">
+                    <form action="{% url 'instructor:assign_course_to_student' ogrenci.id %}" method="post">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <label for="{{ assign_course_form.student.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ assign_course_form.student.label }}</label>
+                            {{ assign_course_form.student }}
+                        </div>
+                        <div class="mb-6">
+                            <label for="{{ assign_course_form.course.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ assign_course_form.course.label }}</label>
+                            {{ assign_course_form.course }}
+                        </div>
+                        <div class="items-center px-4 py-3">
+                            <button type="submit" class="px-4 py-2 bg-blue-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                Kursu Ata
+                            </button>
+                            <button type="button" id="closeAssignCourseModal" class="mt-3 px-4 py-2 bg-gray-300 text-gray-800 text-base font-medium rounded-md w-full shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300">
+                                İptal
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# MODAL: Hata Analizi #}
+    <div id="error-analysis-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-10 mx-auto p-5 border shadow-lg rounded-md bg-white max-w-4xl">
+            <div class="flex justify-between items-center pb-3 border-b">
+                <h3 class="text-xl font-bold text-gray-800" id="modal-text-title">Metin Analizi</h3>
+                <button type="button" id="close-error-analysis-modal" class="text-gray-400 hover:text-gray-600 text-2xl font-bold">&times;</button>
+            </div>
+            <div class="p-4">
+                <div id="interactive-text" class="p-4 bg-gray-50 border border-gray-200 rounded-md min-h-[200px] max-h-[500px] overflow-y-auto text-gray-800 leading-relaxed text-lg mb-4">
+                    Metin yükleniyor...
+                </div>
+                
+                <h4 class="text-lg font-semibold text-gray-700 mb-3">Hata Türleri</h4>
+                <div class="flex flex-wrap gap-2 mb-4" id="mistake-type-buttons-modal">
+                    {% for mistake_type in mistake_types %}
+                        <button type="button" 
+                                class="mistake-btn-modal py-2 px-4 rounded-md text-sm font-medium text-white shadow-sm hover:opacity-80 transition duration-150 ease-in-out" 
+                                data-id="{{ mistake_type.id }}" 
+                                data-name="{{ mistake_type.name }}" {# Hata adını da dataset'e ekledik #}
+                                data-color="{{ mistake_type.color }}"
+                                style="background-color: {{ mistake_type.color }};">
+                            {{ mistake_type.name }}
+                        </button>
+                    {% endfor %}
+                </div>
+
+                <h4 class="text-lg font-semibold text-gray-700 mb-3">İşaretlenen Hatalar (<span id="error-count">0</span>)</h4>
+                <ul id="marked-mistakes-list-modal" class="space-y-2 mb-4 p-3 bg-gray-100 rounded-md border border-gray-200">
+                    <li class="text-gray-600">Henüz hata işaretlenmedi.</li>
+                </ul>
+
+                <div class="flex justify-end space-x-3">
+                    <button type="button" id="save-errors-btn-modal" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out">
+                        <i class="fas fa-check-circle mr-2"></i>Hataları Kaydet
+                    </button>
+                </div>
+            </div>
+            <div id="loading-indicator-modal" class="hidden mt-4 text-center text-blue-600">
+                <i class="fas fa-spinner fa-spin mr-2"></i>Yükleniyor...
+            </div>
+            <div id="message-box-modal" class="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-md hidden"></div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab navigasyon değişkenleri
+            const tabLinks = document.querySelectorAll('.tab-link');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            // Assign Course Modal değişkenleri
+            const assignCourseModal = document.getElementById('assignCourseModal');
+            const openAssignCourseModalBtn = document.getElementById('openAssignCourseModal');
+            const closeAssignCourseModalBtn = document.getElementById('closeAssignCourseModal');
+
+            // Okuma Değerlendirme Formu değişkenleri (Ana Sayfa)
+            const textChapterSelect = document.getElementById('id_text_chapter');
+            const metinSeviyesiInput = document.getElementById('metin-seviyesi');
+            const readingSpeedInput = document.getElementById('id_time_taken_seconds'); // Doğru ID
+            const comprehensionRateInput = document.getElementById('id_comprehension_rate'); // Doğru ID
+            const instructorNotesInput = document.getElementById('id_notes'); // Notlar alanı
+            const saveMainAssessmentFormBtn = document.getElementById('save-main-assessment-form');
+
+            // Hata Analizi Modal değişkenleri
+            const openErrorAnalysisModalBtn = document.getElementById('open-error-analysis-modal-btn'); 
+            const errorAnalysisModal = document.getElementById('error-analysis-modal');
+            const closeErrorAnalysisModalBtn = document.getElementById('close-error-analysis-modal');
+            const interactiveTextElement = document.getElementById('interactive-text');
+            const modalTextTitle = document.getElementById('modal-text-title');
+            const mistakeTypeButtonsContainerModal = document.getElementById('mistake-type-buttons-modal'); 
+            const markedMistakesListModal = document.getElementById('marked-mistakes-list-modal'); 
+            const errorCountSpan = document.getElementById('error-count');
+            const saveErrorsBtnModal = document.getElementById('save-errors-btn-modal'); 
+            const loadingIndicatorModal = document.getElementById('loading-indicator-modal'); 
+            const messageBoxModal = document.getElementById('message-box-modal'); 
+
+            let currentTextData = null; 
+            let currentAssessmentId = null; 
+            let selectedMistakeType = null; 
+            let markedMistakes = []; 
+
+            // Yardımcı fonksiyon: Mesaj Göster
+            function displayMessage(message, type = 'error', targetMessageBox = messageBoxModal) {
+                targetMessageBox.textContent = message;
+                targetMessageBox.className = `mt-4 p-3 rounded-md ${type === 'success' ? 'bg-green-100 border-green-400 text-green-700' : 'bg-red-100 border-red-400 text-red-700'}`;
+                targetMessageBox.style.display = 'block';
+                setTimeout(() => {
+                    targetMessageBox.style.display = 'none';
+                }, 5000); 
+            }
+
+            // Yardımcı fonksiyon: URL parametrelerini al
+            function getUrlParameter(name) {
+                name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+                var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+                var results = regex.exec(location.search);
+                return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+            }
+
+            // Sayfa yüklendiğinde URL'deki assessment_id'yi kontrol et
+            const initialAssessmentId = getUrlParameter('assessment_id');
+            if (initialAssessmentId) {
+                currentAssessmentId = initialAssessmentId;
+                // Metin seçiliyse butonu aktif et
+                if (textChapterSelect && textChapterSelect.value) {
+                    fetchTextContent(textChapterSelect.value); // Metin içeriğini çek
+                    openErrorAnalysisModalBtn.disabled = false; // Butonu aktif et
+                } else {
+                    // Eğer assessment_id var ama metin seçili değilse (örneğin sayfa direk assessment_id ile açıldıysa)
+                    // ilgili assessment'ı ve metni çekip formu ve metin alanını doldur.
+                    fetchAssessmentAndTextForDetails(currentAssessmentId);
+                }
+            }
+
+            // Genel tab navigasyon mantığı
+            function activateTabFromHash() {
+                const hash = window.location.hash;
+                if (hash) {
+                    const targetLink = document.querySelector(`.tab-link[href="${hash.split('?')[0]}"]`); 
+                    if (targetLink && targetLink.dataset.target) {
+                        tabLinks.forEach(item => {
+                            item.classList.remove('active-tab', 'border-blue-500', 'text-blue-600');
+                            item.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                        });
+                        tabContents.forEach(content => content.classList.add('hidden'));
+
+                        targetLink.classList.add('active-tab', 'border-blue-500', 'text-blue-600');
+                        targetLink.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                        
+                        document.getElementById(targetLink.dataset.target).classList.remove('hidden');
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            tabLinks.forEach(link => {
+                link.addEventListener('click', function(event) {
+                    if (this.dataset.target) {
+                        event.preventDefault(); 
+                        window.history.replaceState(null, '', this.getAttribute('href').split('?')[0]); 
+                        activateTabFromHash(); 
+                    }
+                });
+            });
+
+            window.addEventListener('popstate', activateTabFromHash);
+
+            if (!activateTabFromHash()) {
+                const anaEkranTab = document.querySelector('.tab-link[data-target="ana-ekran-content"]');
+                if (anaEkranTab) {
+                    anaEkranTab.click();
+                } else if (tabLinks.length > 0) {
+                    const firstContentTab = Array.from(tabLinks).find(link => link.dataset.target);
+                    if (firstContentTab) {
+                        firstContentTab.click();
+                    }
+                }
+            }
+            
+            // Assign Course Modal işlemleri
+            if (openAssignCourseModalBtn) {
+                openAssignCourseModalBtn.addEventListener('click', function() {
+                    assignCourseModal.classList.remove('hidden');
+                });
+            }
+
+            if (closeAssignCourseModalBtn) {
+                closeAssignCourseModalBtn.addEventListener('click', function() {
+                    assignCourseModal.classList.add('hidden');
+                });
+            }
+
+            window.addEventListener('click', function(event) {
+                if (event.target == assignCourseModal) {
+                    assignCourseModal.classList.add('hidden');
+                }
+            });
+
+
+            // Metin seçimi değiştiğinde seviyeyi ve içeriği güncelle
+            if (textChapterSelect) {
+                textChapterSelect.addEventListener('change', async function() {
+                    const selectedChapterId = this.value;
+                    if (selectedChapterId) {
+                        await fetchTextContent(selectedChapterId);
+                        if (!currentAssessmentId) { // Yeni bir rapor kaydetme durumu
+                            openErrorAnalysisModalBtn.disabled = true;
+                        } else { // Var olan bir raporu düzenleme durumu (assessment_id URL'de var)
+                            openErrorAnalysisModalBtn.disabled = false;
+                        }
+                    } else { // Metin seçimi boşaltıldığında
+                        metinSeviyesiInput.value = 'Seçilmedi';
+                        currentTextData = null;
+                        openErrorAnalysisModalBtn.disabled = true;
+                        currentAssessmentId = null; 
+                        markedMistakes = []; 
+                        renderMarkedMistakes(); 
+                    }
+                });
+            }
+
+            // Metin içeriğini ve seviyesini çeken fonksiyon
+            async function fetchTextContent(chapterId) {
+                loadingIndicatorModal.classList.remove('hidden'); 
+                try {
+                    // URL düzeltmesi: /instructor/
+                    const response = await fetch(`/instructor/get-text-chapter-data/${chapterId}/`); 
+                    const data = await response.json();
+                    
+                    if (response.ok) { 
+                        metinSeviyesiInput.value = data.level;
+                        currentTextData = {
+                            id: data.id,
+                            title: data.title,
+                            content: data.content,
+                            level: data.level
+                        };
+                        modalTextTitle.textContent = currentTextData.title; 
+                        displayInteractiveText(currentTextData.content); 
+                    } else { 
+                        displayMessage('Metin bilgisi çekilirken bir sorun oluştu: ' + (data.error || 'Bilinmeyen Hata'), 'error', messageBoxModal);
+                        metinSeviyesiInput.value = 'Hata';
+                        openErrorAnalysisModalBtn.disabled = true;
+                        currentTextData = null;
+                        markedMistakes = [];
+                        renderMarkedMistakes();
+                    }
+                } catch (error) { 
+                    displayMessage('Metin bilgisi çekilirken bir ağ hatası oluştu. Lütfen konsolu kontrol edin.', 'error', messageBoxModal);
+                    console.error('Network error:', error);
+                    metinSeviyesiInput.value = 'Hata';
+                    openErrorAnalysisModalBtn.disabled = true;
+                    currentTextData = null;
+                    markedMistakes = [];
+                    renderMarkedMistakes();
+                } finally {
+                    loadingIndicatorModal.classList.add('hidden');
+                }
+            }
+
+            // "Raporu Kaydet" butonuna tıklandığında (main form submit olduğunda)
+            if (saveMainAssessmentFormBtn) {
+                saveMainAssessmentFormBtn.addEventListener('click', function(event) {
+                    if (!textChapterSelect.value) {
+                        displayMessage('Lütfen raporu kaydetmeden önce bir okuma metni seçin.', 'error'); // Ana sayfa mesaj kutusu
+                        event.preventDefault(); 
+                        return;
+                    }
+                    if (!readingSpeedInput.value || !comprehensionRateInput.value) {
+                        displayMessage('Lütfen Bitirme Süresi ve Anlama Oranı alanlarını doldurun.', 'error'); // Ana sayfa mesaj kutusu
+                        event.preventDefault();
+                        return;
+                    }
+                });
+            }
+
+            // Hata Analizi Modal'ını Aç
+            if (openErrorAnalysisModalBtn) {
+                openErrorAnalysisModalBtn.addEventListener('click', function() {
+                    if (currentAssessmentId && currentTextData) { 
+                        modalTextTitle.textContent = currentTextData.title;
+                        displayInteractiveText(currentTextData.content);
+                        fetchMistakesForAssessment(currentAssessmentId); // Mevcut hataları çek
+                        errorAnalysisModal.classList.remove('hidden');
+                    } else {
+                        displayMessage('Hata analizi yapmadan önce lütfen okuma metnini seçin ve raporu kaydedin (Raporu Kaydet butonuna basın).', 'error');
+                    }
+                });
+            }
+
+            // Hata Analizi Modal'ını Kapat
+            if (closeErrorAnalysisModalBtn) {
+                closeErrorAnalysisModalBtn.addEventListener('click', function() {
+                    errorAnalysisModal.classList.add('hidden');
+                    selectedMistakeType = null; 
+                    // Metin alanındaki işaretlemeleri temizleme (yeniden yüklemeye gerek yok)
+                    document.querySelectorAll('#interactive-text .inline-block').forEach(span => {
+                        span.style.backgroundColor = '';
+                        span.style.color = '';
+                        span.classList.add('hover:bg-blue-200');
+                    });
+                });
+            }
+            
+            // Geçmiş değerlendirme detayları butonu
+            document.querySelectorAll('.view-assessment-details').forEach(button => {
+                button.addEventListener('click', async function() {
+                    const assessmentId = this.dataset.assessmentId;
+                    const textChapterId = this.dataset.textChapterId;
+
+                    currentAssessmentId = assessmentId; // Seçili değerlendirme ID'sini ayarla
+                    textChapterSelect.value = textChapterId; // Dropdown'ı seçili hale getir
+                    
+                    // Metin içeriğini ve geçmiş değerlendirme form verilerini çek ve modalı aç
+                    await fetchAssessmentAndTextForDetails(assessmentId);
+
+                    // Tanıma sekmesini aç ve modalı göster
+                    const tanimaTabLink = document.querySelector('.tab-link[data-target="tanima-content"]');
+                    if (tanimaTabLink) {
+                        tanimaTabLink.click();
+                        // Modalı açmak için biraz gecikme ekleyebiliriz
+                        setTimeout(() => {
+                            errorAnalysisModal.classList.remove('hidden');
+                        }, 100); 
+                    }
+                });
+            });
+
+            // Geçmiş bir değerlendirme için form verilerini ve metni çeken fonksiyon
+            async function fetchAssessmentAndTextForDetails(assessmentId) {
+                loadingIndicatorModal.classList.remove('hidden');
+                try {
+                    // assessment detaylarını çekmek için yeni bir view'e ihtiyaç duyabiliriz
+                    // veya past_assessments_json'ı kullanarak buradan bulabiliriz
+                    // Şimdilik past_assessments_json'dan çekme yolunu izliyoruz (views.py'den gelen veri)
+                    const pastAssessmentsData = JSON.parse(document.getElementById('past_assessments_json').textContent);
+                    const selectedAssessment = pastAssessmentsData.find(a => a.id == assessmentId);
+
+                    if (selectedAssessment) {
+                        textChapterSelect.value = selectedAssessment.text_chapter; // text_chapter_id olarak gelir
+                        await fetchTextContent(selectedAssessment.text_chapter); // Metin içeriğini çek
+                        
+                        readingSpeedInput.value = selectedAssessment.time_taken_seconds || '';
+                        comprehensionRateInput.value = selectedAssessment.comprehension_rate || '';
+                        instructorNotesInput.value = selectedAssessment.notes || '';
+
+                        // Hataları da çek
+                        await fetchMistakesForAssessment(assessmentId);
+                        openErrorAnalysisModalBtn.disabled = false; // Butonu aktif et
+                    } else {
+                        displayMessage('Değerlendirme detayları bulunamadı.', 'error', messageBoxModal);
+                    }
+                } catch (error) {
+                    displayMessage('Değerlendirme detayları çekilirken hata oluştu: ' + error.message, 'error', messageBoxModal);
+                    console.error('Error fetching assessment details:', error);
+                } finally {
+                    loadingIndicatorModal.classList.add('hidden');
+                }
+            }
+
+
+            // Verilen değerlendirme ID'sine ait hataları çeken fonksiyon
+            async function fetchMistakesForAssessment(assessmentId) {
+                loadingIndicatorModal.classList.remove('hidden');
+                try {
+                    // URL düzeltmesi: /instructor/
+                    const response = await fetch(`/instructor/get-reading-mistakes/${assessmentId}/`);
+                    const data = await response.json();
+                    if (response.ok) {
+                        markedMistakes = data.mistakes.map(m => ({
+                            mistakeText: m.mistake_text,
+                            mistakeTypeId: m.mistake_type_id,
+                            mistakeTypeName: m.mistake_type_name,
+                            wordIndex: m.word_index_in_text,
+                            startIndex: m.text_segment_start_index,
+                            endIndex: m.text_segment_end_index,
+                            notes: m.notes,
+                            color: m.mistake_type_color 
+                        }));
+                        renderMarkedMistakes();
+                        displayInteractiveText(currentTextData.content); 
+                    } else {
+                        displayMessage('Değerlendirme hataları çekilirken sorun oluştu: ' + (data.error || 'Bilinmeyen Hata'), 'error', messageBoxModal);
+                    }
+                } catch (error) {
+                    displayMessage('Değerlendirme hataları çekilirken ağ hatası oluştu.', 'error', messageBoxModal);
+                    console.error('Error fetching mistakes:', error);
+                } finally {
+                    loadingIndicatorModal.classList.add('hidden');
+                }
+            }
+
+
+            // İnteraktif Metni Göster ve Kelime Tıklama İşlemleri
+            function displayInteractiveText(text) {
+                if (!interactiveTextElement) {
+                    console.error("Hata: 'interactiveTextElement' bulunamadı.");
+                    return;
+                }
+                interactiveTextElement.innerHTML = ''; 
+                const words = text.split(/\s+/).filter(word => word.length > 0); 
+                let charIndex = 0; 
+
+                words.forEach((word, index) => {
+                    const span = document.createElement('span');
+                    span.textContent = word + ' '; 
+                    span.dataset.wordIndex = index; 
+                    span.dataset.startIndex = charIndex; 
+                    span.dataset.endIndex = charIndex + word.length -1; 
+                    span.classList.add('inline-block', 'px-1', 'py-0.5', 'rounded', 'cursor-pointer', 'hover:bg-blue-200'); 
+
+                    // Daha önce işaretlenmiş bir hata var mı kontrol et ve uygula
+                    const existingMarkedMistake = markedMistakes.find(m => 
+                        m.wordIndex === index && m.mistakeText === word
+                    );
+                    if (existingMarkedMistake) {
+                        span.style.backgroundColor = existingMarkedMistake.color;
+                        span.style.color = 'white';
+                        span.classList.remove('hover:bg-blue-200');
+                    }
+
+                    span.addEventListener('click', function() {
+                        const wordText = this.textContent.trim();
+                        const wordIndex = parseInt(this.dataset.wordIndex);
+
+                        const existingMistakeInList = markedMistakes.findIndex(m => m.wordIndex === wordIndex && m.mistakeText === wordText);
+
+                        if (existingMistakeInList !== -1) {
+                            // Zaten işaretliyse kaldır
+                            markedMistakes.splice(existingMistakeInList, 1);
+                            this.style.backgroundColor = ''; 
+                            this.style.color = ''; 
+                            this.classList.add('hover:bg-blue-200');
+                            displayMessage(`Hata kaldırıldı: '${wordText}'`, 'info', messageBoxModal);
+                        } else {
+                            if (!selectedMistakeType) {
+                                displayMessage("Lütfen önce yukarıdan bir hata tipi seçin.", 'error', messageBoxModal);
+                                return;
+                            }
+                            markedMistakes.push({
+                                mistakeText: wordText,
+                                mistakeTypeId: selectedMistakeType.id,
+                                mistakeTypeName: selectedMistakeType.name,
+                                wordIndex: wordIndex,
+                                startIndex: parseInt(this.dataset.startIndex),
+                                endIndex: parseInt(this.dataset.endIndex),
+                                notes: "",
+                                color: selectedMistakeType.color 
+                            });
+                            this.style.backgroundColor = selectedMistakeType.color;
+                            this.style.color = 'white';
+                            this.classList.remove('hover:bg-blue-200');
+                            displayMessage(`Hata işaretlendi: '${wordText}' (${selectedMistakeType.name})`, 'success', messageBoxModal);
+                        }
+                        renderMarkedMistakes();
+                    });
+                    interactiveTextElement.appendChild(span);
+                    charIndex += word.length + 1; 
+                });
+            }
+            
+            // Hata Tipi Butonlarına Tıklama İşlemi (Modal içindeki butonlar)
+            if (mistakeTypeButtonsContainerModal) {
+                mistakeTypeButtonsContainerModal.addEventListener('click', function(event) {
+                    const target = event.target.closest('.mistake-btn-modal');
+                    if (target) {
+                        const currentlySelected = this.querySelector('.ring-2.ring-offset-2.ring-blue-500');
+                        if (currentlySelected) {
+                            currentlySelected.classList.remove('ring-2', 'ring-offset-2', 'ring-blue-500');
+                        }
+                        target.classList.add('ring-2', 'ring-offset-2', 'ring-blue-500');
+                        selectedMistakeType = {
+                            id: target.dataset.id,
+                            name: target.dataset.name, 
+                            color: target.dataset.color 
+                        };
+                        displayMessage(`Hata tipi seçildi: ${selectedMistakeType.name}`, 'info', messageBoxModal);
+                    }
+                });
+            }
+
+            // İşaretlenen Hatalar Listesini Güncelle
+            function renderMarkedMistakes() {
+                if (!markedMistakesListModal || !errorCountSpan) {
+                    console.error("Hata: Gerekli DOM elemanları (markedMistakesListModal veya errorCountSpan) bulunamadı.");
+                    return;
+                }
+
+                markedMistakesListModal.innerHTML = ''; 
+                if (markedMistakes.length === 0) {
+                    markedMistakesListModal.innerHTML = '<li class="text-gray-600">Henüz hata işaretlenmedi.</li>';
+                } else {
+                    markedMistakes.sort((a, b) => a.wordIndex - b.wordIndex);
+
+                    markedMistakes.forEach((mistake, index) => {
+                        const listItem = document.createElement('li');
+                        listItem.classList.add('flex', 'items-center', 'justify-between', 'py-1');
+                        listItem.innerHTML = `
+                            <span class="font-semibold" style="color: ${mistake.color};">
+                                <span class="inline-block w-3 h-3 rounded-full mr-2" style="background-color: ${mistake.color};"></span>
+                                ${mistake.mistakeTypeName}: "${mistake.mistakeText}" (Kelime #${mistake.wordIndex + 1})
+                            </span>
+                            <button class="text-red-500 hover:text-red-700 ml-2 remove-mistake-btn-modal" data-index="${index}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        `;
+                        markedMistakesListModal.appendChild(listItem);
+                    });
+                }
+                errorCountSpan.textContent = markedMistakes.length;
+
+                // Metin alanındaki kelimelerin arka plan renklerini de güncelle
+                document.querySelectorAll('#interactive-text .inline-block').forEach(span => {
+                    const wordIndex = parseInt(span.dataset.wordIndex);
+                    const wordText = span.textContent.trim();
+                    // Bulunduğumuz kelimenin işaretli olup olmadığını kontrol et
+                    const foundMistake = markedMistakes.find(m => m.wordIndex === wordIndex && m.mistakeText === wordText);
+                    if (foundMistake) {
+                        span.style.backgroundColor = foundMistake.color;
+                        span.style.color = 'white';
+                        span.classList.remove('hover:bg-blue-200');
+                    } else {
+                        span.style.backgroundColor = '';
+                        span.style.color = '';
+                        span.classList.add('hover:bg-blue-200');
+                    }
+                });
+            }
+
+            // İşaretlenen hatalar listesinden kaldırma (modal içinde)
+            if (markedMistakesListModal) {
+                markedMistakesListModal.addEventListener('click', function(event) {
+                    const target = event.target.closest('.remove-mistake-btn-modal');
+                    if (target) {
+                        const indexToRemove = parseInt(target.dataset.index);
+                        const removedMistake = markedMistakes.splice(indexToRemove, 1)[0];
+                        
+                        // Metin alanındaki işaretlemeyi de kaldır
+                        const allSpans = interactiveTextElement.querySelectorAll('span[data-word-index]');
+                        const targetSpan = Array.from(allSpans).find(span => 
+                            parseInt(span.dataset.wordIndex) === removedMistake.wordIndex && 
+                            span.textContent.trim() === removedMistake.mistakeText
+                        );
+                        if (targetSpan) {
+                            targetSpan.style.backgroundColor = '';
+                            targetSpan.style.color = '';
+                            targetSpan.classList.add('hover:bg-blue-200');
+                        }
+                        displayMessage(`Hata kaldırıldı: '${removedMistake.mistakeText}'`, 'info', messageBoxModal);
+                        renderMarkedMistakes();
+                    }
+                });
+            }
+
+            // Hataları Kaydet Butonu (modal içindeki)
+            if (saveErrorsBtnModal) {
+                saveErrorsBtnModal.addEventListener('click', async function() {
+                    if (markedMistakes.length === 0) {
+                        displayMessage('Kaydedilecek hata bulunmuyor.', 'warning', messageBoxModal);
+                        return;
+                    }
+
+                    if (!currentAssessmentId) { 
+                        displayMessage('Hataları kaydetmeden önce lütfen Okuma Değerlendirme Raporunu kaydedin (Raporu Kaydet butonuna basın).', 'error', messageBoxModal);
+                        return;
+                    }
+
+                    loadingIndicatorModal.classList.remove('hidden');
+                    try {
+                        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                        // URL düzeltmesi: /instructor/
+                        const response = await fetch(`/instructor/save-reading-mistakes/{{ ogrenci.id }}/`, { 
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': csrfToken
+                            },
+                            body: JSON.stringify({
+                                assessment_id: currentAssessmentId, 
+                                mistakes: markedMistakes
+                            })
+                        });
+
+                        const result = await response.json();
+                        if (response.ok) {
+                            displayMessage(result.message, 'success', messageBoxModal);
+                            // Başarıyla kaydedildiğinde modalı kapat ve sayfayı yenile
+                            errorAnalysisModal.classList.add('hidden'); 
+                            location.reload(); 
+                        } else {
+                            displayMessage('Hata kaydedilirken bir sorun oluştu: ' + (result.message || 'Bilinmeyen Hata'), 'error', messageBoxModal);
+                            console.error('Server error:', result.errors || result.message || result);
+                        }
+                    } catch (error) {
+                        displayMessage('Hata kaydedilirken bir ağ hatası oluştu.', 'error', messageBoxModal);
+                        console.error('Network error:', error);
+                    } finally {
+                        loadingIndicatorModal.classList.add('hidden');
+                    }
+                });
+            }
+            
+            // Sayfa yüklendiğinde metin seçiliyse ve assessment_id varsa yükle
+            if (textChapterSelect.value && currentAssessmentId) {
+                fetchTextContent(textChapterSelect.value);
+            }
+        });
+    </script>
+{% endblock content %}

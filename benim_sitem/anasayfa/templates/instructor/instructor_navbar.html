@@ -1,0 +1,154 @@
+{% load static %}
+
+<nav class="bg-white shadow-md px-6 flex items-center justify-between sticky top-0 z-50 h-16">
+    <div class="flex items-center">
+        <a href="{% url 'instructor:dashboard' %}" class="flex items-center space-x-2 ml-4"> 
+            <img src="{% static 'img/logo.png' %}" alt="Odak Matik Logo" class="h-16">
+        </a>
+    </div>
+
+    <div class="hidden md:flex items-center space-x-6">
+        <a href="{% url 'instructor:dashboard' %}" class="text-gray-600 hover:text-blue-600 font-medium flex items-center space-x-2">
+            <i class="fas fa-home"></i>
+            <span>Ana Ekran</span>
+        </a>
+
+        {# Öğrenciler Dropdown #}
+        <div class="relative">
+            <a href="#" class="text-gray-600 hover:text-blue-600 font-medium flex items-center space-x-2 dropdown-toggle" id="studentsDropdown" role="button" aria-expanded="false">
+                <i class="fas fa-user-graduate"></i>
+                <span>Öğrenciler</span>
+                <i class="fas fa-chevron-down text-xs ml-1"></i>
+            </a>
+            <ul class="absolute hidden bg-white shadow-lg rounded-md py-2 w-48 mt-2 z-10 dropdown-menu" aria-labelledby="studentsDropdown">
+                <li><a class="block px-4 py-2 text-gray-800 hover:bg-gray-100 rounded-md" href="{% url 'instructor:ogrencilerim_listesi' %}">Öğrenci Listesi</a></li>
+                <li><a class="block px-4 py-2 text-gray-800 hover:bg-gray-100 rounded-md" href="{% url 'instructor:ogrenci_ekle' %}">Öğrenci Ekle</a></li>
+            </ul>
+        </div>
+
+        {# Sipariş Yönetimi Dropdown #}
+        <div class="relative">
+            <a href="#" class="text-gray-600 hover:text-blue-600 font-medium flex items-center space-x-2 dropdown-toggle" id="orderManagementDropdown" role="button" aria-expanded="false">
+                <i class="fas fa-shopping-cart"></i>
+                <span>Sipariş Yönetimi</span>
+                <i class="fas fa-chevron-down text-xs ml-1"></i>
+            </a>
+            <ul class="absolute hidden bg-white shadow-lg rounded-md py-2 w-48 mt-2 z-10 dropdown-menu" aria-labelledby="orderManagementDropdown">
+                <li><a class="block px-4 py-2 text-gray-800 hover:bg-gray-100 rounded-md" href="{% url 'instructor:instructor_new_order' %}">Yeni Sipariş</a></li>
+                <li><a class="block px-4 py-2 text-gray-800 hover:bg-gray-100 rounded-md" href="{% url 'instructor:instructor_order_history' %}">Siparişlerim</a></li>
+                <li><a class="block px-4 py-2 text-gray-800 hover:bg-gray-100 rounded-md" href="{% url 'instructor:instructor_payment_notifications' %}">Ödeme Bildirimlerim</a></li>
+            </ul>
+        </div>
+
+        
+    </div>
+
+    <div class="flex items-center space-x-4">
+        <button class="text-gray-600 hover:text-blue-600 focus:outline-none">
+            <i class="fas fa-moon"></i>
+        </button>
+
+        <div class="flex items-center space-x-2">
+            {% if request.user.is_authenticated %}
+                {# Kredi Miktarı Gösterimi (Güncellendi) #}
+                <a href="{% url 'instructor:my_credits' %}" class="text-gray-500 text-sm flex items-center space-x-1 hover:text-blue-600">
+                    <i class="fas fa-coins text-yellow-500"></i> {# İkon rengi text-yellow-500 olarak ayarlandı #}
+                    <span>Kredi: {{ request.user.credit_account.amount|default:0 }}</span>
+                </a>
+
+                {# Profil Dropdown menü için ana tıklanabilir alan #}
+                <div class="relative" id="profileDropdownContainer">
+                    <a href="#" class="flex items-center space-x-2 text-gray-800 font-semibold cursor-pointer" id="profileMenuButton">
+                        <span>{{ request.user.username }}</span>
+                        {# Profil fotoğrafı veya baş harflerini gösteren kısım #}
+                        <div class="flex items-center justify-center h-10 w-10 rounded-full border-2 border-blue-500 bg-gray-200 text-gray-700 text-lg font-bold overflow-hidden">
+                            {% if request.user.profile.profile_picture %}
+                                <img src="{{ request.user.profile.profile_picture.url }}" alt="Profil Resmi" class="h-full w-full object-cover">
+                            {% else %}
+                                {{ request.user.username|first|upper }}
+                            {% endif %}
+                        </div>
+                        <i class="fas fa-chevron-down text-xs"></i>
+                    </a>
+
+                    {# Dropdown menü içeriği #}
+                    <ul id="profileDropdownMenu" class="absolute hidden bg-white shadow-lg rounded-md py-2 w-48 mt-2 z-10 right-0">
+                        <li><a class="block px-4 py-2 text-gray-800 hover:bg-gray-100 rounded-md" href="{% url 'instructor:profile_view' %}">Profil</a></li>
+                        <li><hr class="border-t border-gray-200 my-1"></li>
+                        <li>
+                            <form action="{% url 'instructor:logout' %}" method="post" class="w-full">
+                                {% csrf_token %}
+                                <button type="submit" class="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-100 rounded-md">Çıkış Yap</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+
+            {% else %}
+                <a href="{% url 'login' %}" class="text-gray-600 hover:text-blue-600 font-medium">Giriş Yap</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Profil Dropdown
+        const profileMenuButton = document.getElementById('profileMenuButton');
+        const profileDropdownMenu = document.getElementById('profileDropdownMenu');
+        const profileDropdownContainer = document.getElementById('profileDropdownContainer');
+
+        if (profileMenuButton && profileDropdownMenu) {
+            profileMenuButton.addEventListener('click', function(event) {
+                event.preventDefault();
+                profileDropdownMenu.classList.toggle('hidden');
+                profileDropdownMenu.classList.toggle('block');
+            });
+
+            document.addEventListener('click', function(event) {
+                if (profileDropdownContainer && !profileDropdownContainer.contains(event.target)) {
+                    profileDropdownMenu.classList.add('hidden');
+                    profileDropdownMenu.classList.remove('block');
+                }
+            });
+        }
+
+        // Öğrenciler Dropdown
+        const studentsDropdownButton = document.getElementById('studentsDropdown');
+        const studentsDropdownMenu = studentsDropdownButton ? studentsDropdownButton.nextElementSibling : null;
+        
+        if (studentsDropdownButton && studentsDropdownMenu) {
+            studentsDropdownButton.addEventListener('click', function(event) {
+                event.preventDefault();
+                studentsDropdownMenu.classList.toggle('hidden');
+                studentsDropdownMenu.classList.toggle('block');
+            });
+
+            document.addEventListener('click', function(event) {
+                if (!studentsDropdownButton.contains(event.target) && !studentsDropdownMenu.contains(event.target)) {
+                    studentsDropdownMenu.classList.add('hidden');
+                    studentsDropdownMenu.classList.remove('block');
+                }
+            });
+        }
+
+        // Sipariş Yönetimi Dropdown
+        const orderManagementDropdownButton = document.getElementById('orderManagementDropdown');
+        const orderManagementDropdownMenu = orderManagementDropdownButton ? orderManagementDropdownButton.nextElementSibling : null;
+
+        if (orderManagementDropdownButton && orderManagementDropdownMenu) {
+            orderManagementDropdownButton.addEventListener('click', function(event) {
+                event.preventDefault();
+                orderManagementDropdownMenu.classList.toggle('hidden');
+                orderManagementDropdownMenu.classList.toggle('block');
+            });
+
+            document.addEventListener('click', function(event) {
+                if (!orderManagementDropdownButton.contains(event.target) && !orderManagementDropdownMenu.contains(event.target)) {
+                    orderManagementDropdownMenu.classList.add('hidden');
+                    orderManagementDropdownMenu.classList.remove('block');
+                }
+            });
+        }
+    });
+</script>

@@ -1,0 +1,21 @@
+{% extends 'instructor/instructor_base.html' %}
+{% load static %}
+
+{% block title %}Ödeme İptal Edildi{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-5">
+    <div class="card text-center border-warning shadow-lg">
+        <div class="card-header bg-warning text-white h3">
+            <i class="fas fa-exclamation-triangle fa-2x"></i>
+        </div>
+        <div class="card-body">
+            <h4 class="card-title text-warning">Ödeme İşlemi İptal Edildi</h4>
+            <p class="card-text lead">Ödeme işleminiz başarıyla iptal edildi veya tamamlanmadı.</p>
+            <p class="card-text">Tekrar denemek için yeni sipariş sayfasına dönebilirsiniz.</p>
+            <a href="{% url 'instructor:instructor_new_order' %}" class="btn btn-warning mt-3">Yeni Sipariş Oluştur</a>
+            <a href="{% url 'instructor:dashboard' %}" class="btn btn-outline-secondary mt-3 ml-2">Ana Sayfaya Dön</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

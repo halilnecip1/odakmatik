@@ -1,0 +1,148 @@
+/* ——— Hero Section ——— */
+.hero {
+    display: flex;
+    flex-wrap: wrap;
+    /* align-items: center; */ /* Yorum satırına aldık, içeriği ortalamasını istemiyoruz */
+    align-items: flex-start; /* İçeriği yukarı hizala */
+    justify-content: center; /* Yatayda ortalamayı koru */
+
+    /* Padding'i daha kontrollü hale getirelim */
+    padding-top: 130px; /* Navbar yüksekliği (100px) + ek boşluk (30px) */
+    padding-bottom: 50px; /* Alt boşluk */
+    padding-left: 5rem;
+    padding-right: 5rem;
+
+    background: url('/static/img/hero3.png') no-repeat center; /* center center yerine sadece center */
+    background-size: cover;
+    background-position: center top; /* Resmi üstten başlat, alt kısım kesilebilir */
+    gap: 0;
+    /* width: 100vw; /* Bu satır bazen viewport sorunlarına yol açabilir, dikkatli kullanılmalı */
+    /* justify-content: space-between; */ /* Flex içinde yan yana iki ana elementiniz varsa kullanılır */
+    max-width: 100%; /* Sayfanın tamamını kaplaması için */
+    margin: auto; /* Yatayda ortalama */
+    text-align: left;
+    min-height: 550px; /* Slider'ın genel minimum yüksekliğini belirleyelim */
+    height: auto; /* İçeriğe göre otomatik yükseklik */
+}
+
+.hero-text {
+    margin-left: 0; /* Yazıyı resme biraz daha yaklaştır */
+    padding: 1rem 5rem;
+    flex: 1 1 400px;
+    max-width: 700px;
+    /* animation: fadeInLeft 1s ease forwards; */ /* Django'ya entegre ederken animasyonları kontrol edebiliriz */
+}
+.hero-text h1 {
+    font-size: 1.7rem;
+    margin-bottom: 1rem;
+    font-weight: 800;
+    color: #222;
+    line-height: 1.1;
+}
+
+.highlight {
+    font-size: 2.5rem;
+    color: #e40000;
+    font-weight: 700;
+}
+.hero-text p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    color: #000000;
+    line-height: 1.5;
+}
+.btn-group {
+    display: flex;
+    gap: 1rem;
+}
+.btn-group a {
+    text-decoration: none; /* Alt çizgiyi tamamen kaldır */
+}
+.btn-primary { /* Bu sınıfı sizde olduğu gibi ekledim, orijinalde yoktu */
+    padding: 0.6rem 1.5rem;
+    background: #ff0000; /* Örnek renk, kendi temanıza göre ayarlayın */
+    color: #fff;
+    border-radius: 0.4rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.btn-primary:hover {
+    background: #ff0000;
+}
+.btn-secondary {
+    padding: 0.6rem 1.5rem;
+    border: 2px solid #fc0000;
+    background: transparent;
+    color: #760000;
+    border-radius: 0.4rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+.btn-secondary:hover,
+.btn-secondary:focus {
+    background: #ff0000;
+    color: #fff;
+    border-color: #ff0000; /* Kenarlığı da aynı renk yap */
+}
+.hero img {
+    margin-right: 0;
+    flex: 1 1 300px;
+    max-width: 700px;
+    height: auto;
+    border-radius: 100%; /* Görseli tamamen oval yapar */
+    box-shadow: 0 20px 50px rgba(0, 28, 188, 0.73);
+    /* animation: fadeInRight 1.2s ease forwards; */ /* Django'ya entegre ederken animasyonları kontrol edebiliriz */
+    object-fit: cover; /* Görselin çerçeveye tam oturmasını sağlar */
+}
+.hero-slider {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+
+.slides {
+    display: flex;
+    transition: transform 2s ease-in-out;
+}
+
+.slide {
+    min-width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+}
+
+
+/* Kaydırma butonları */
+.slider-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent; /* Arka planı şeffaf yap */
+    color: rgb(113, 167, 255); /* Ok rengi (mavi) */
+    border: none;
+    cursor: pointer;
+    z-index: 10;
+    /* padding: 12px; */ /* Butonun etrafındaki boşluğu kaldırın veya azaltın */
+    padding: 0; /* padding'i sıfırlayın */
+    font-size: 50px;
+    transition: color 0.3s; /* Sadece renk geçişi olsun */
+}
+
+.slider-btn:hover {
+    /* background: rgba(255, 255, 255, 0.8); */ /* Hover'daki arka planı da kaldırın */
+    background: transparent; /* Hover'da da şeffaf kalsın */
+    color: rgb(0, 0, 255); /* İsterseniz hover'da okun rengini değiştirebilirsiniz, daha belirgin olabilir */
+}
+
+.prev {
+    left: 10px;
+}
+
+.next {
+    right: 10px;
+}

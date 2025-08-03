@@ -1,0 +1,43 @@
+{# anasayfa/templates/makale_detay.html #}
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ makale.baslik }} - Makale Detay{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container mt-5">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                {# DÜZELTİLMİŞ URL: anasayfa:anasayfa_home yerine 'index' kullanıldı #}
+                <li class="breadcrumb-item"><a href="{% url 'index' %}">Ana Sayfa</a></li>
+                {# DÜZELTİLMİŞ URL: anasayfa:tum_makaleler yerine 'articles' kullanıldı #}
+                <li class="breadcrumb-item"><a href="{% url 'articles' %}">Makaleler</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ makale.baslik }}</li>
+            </ol>
+        </nav>
+
+        <div class="row">
+            <div class="col-lg-10 offset-lg-1">
+                <h1 class="display-4 fw-bold mb-4 text-center">{{ makale.baslik }}</h1>
+                <p class="text-muted text-center mb-4">
+                    Yayınlanma Tarihi: {{ makale.yayinlanma_tarihi|date:"d F Y" }}
+                </p>
+
+                {% if makale.gorsel %}
+                    <img src="{{ makale.gorsel.url }}" class="img-fluid rounded mb-5" alt="{{ makale.baslik }} görseli" style="max-height: 450px; object-fit: cover; width: 100%;">
+                {% endif %}
+
+                <div class="article-content lead">
+                    {{ makale.icerik|safe }} {# Makalenin içeriğini HTML olarak gösterir #}
+                </div>
+
+                <div class="mt-5 text-center">
+                    {# DÜZELTİLMİŞ URL: anasayfa:articles yerine 'articles' kullanıldı #}
+                    <a href="{% url 'articles' %}" class="btn btn-outline-secondary">Tüm Makalelere Geri Dön</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,61 @@
+{# anasayfa/templates/iletisim.html #}
+{% extends 'base.html' %}
+
+{% block title %}İletişim | Odak Matik{% endblock %}
+
+{% block extra_css %}
+    {# Bu sayfaya özel CSS'ler (eğer varsa) buraya gelebilir #}
+    <style>
+        /* İletişim sayfasının içeriğinin navbarın altından başlamasını sağlar */
+        .contact-content {
+            padding-top: 80px; /* Navbar yüksekliğiniz (100px) + ek boşluk (30px) */
+            /* Bu değeri deneyerek en uygun boşluğu bulabilirsiniz.
+               Eğer body'de padding-top veya main'de padding-top kullanılıyorsa
+               bu değeri daha küçük tutabilirsiniz. */
+            padding-bottom: 50px;
+        }
+
+        /* Başlığa ve paragrafa daha az üst boşluk */
+        .contact-content h1 {
+            margin-top: 0; /* Eğer otomatik üst boşluk alıyorsa sıfırla */
+            margin-bottom: 0.5rem; /* Başlık ile paragraf arası boşluk */
+        }
+
+        .contact-content p {
+            margin-bottom: 1.5rem; /* Paragraf ile form arası boşluk */
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+{# Yeni bir kapsayıcı div ekleyelim ve ona özel bir sınıf verelim #}
+<div class="contact-content"> {# <<-- BURADA DEĞİŞİKLİK YAPILDI #}
+    <div class="container"> {# Bootstrap container'ı içindeki içeriği ortalar #}
+        <h1>Bize Ulaşın</h1>
+        <p>Sorularınız veya geri bildirimleriniz için aşağıdaki formu kullanabilirsiniz.</p>
+
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow p-4">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="id_name" class="form-label">Ad Soyad</label>
+                            <input type="text" class="form-control" id="id_name" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_email" class="form-label">E-posta Adresi</label>
+                            <input type="email" class="form-control" id="id_email" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_message" class="form-label">Mesajınız</label>
+                            <textarea class="form-control" id="id_message" name="message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Mesaj Gönder</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

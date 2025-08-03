@@ -1,0 +1,31 @@
+{% extends 'base.html' %} {# BURASI DEĞİŞTİRİLDİ! #}
+
+{% block title %}Giriş Yap | Odak Matik{% endblock %} {# Title ekledik #}
+
+{% block content %}
+<div class="container my-5"> {# my-5 ile üstten ve alttan boşluk verdik #}
+    <div class="row justify-content-center"> {# Formu ortalamak için #}
+        <div class="col-md-6 col-lg-5"> {# Formun genişliğini ayarladık #}
+            <div class="card shadow p-4"> {# Formu kart içine aldık #}
+                <h2 class="card-title text-center mb-4">Giriş Yap</h2>
+                {% if hata %}
+                    <div class="alert alert-danger">{{ hata }}</div>
+                {% endif %}
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="id_kullanici_adi" class="form-label">Kullanıcı Adı</label>
+                        <input type="text" name="kullanici_adi" id="id_kullanici_adi" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_sifre" class="form-label">Şifre</label>
+                        <input type="password" name="sifre" id="id_sifre" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Giriş Yap</button>
+                </form>
+                <p class="text-center mt-3">Hesabınız yok mu? <a href="{% url 'kullanici:kayit' %}">Kayıt Olun</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

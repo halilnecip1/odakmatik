@@ -1,0 +1,133 @@
+{% extends 'student/student_base.html' %}
+{% load static %}
+{% load student_extras %} {# Bu satır ekli ve templatetags klasörünüz doğru konumda olmalı #}
+
+{% block title %}Öğrenci Paneli - Eğitimlerim{% endblock title %}
+
+{% block content %}
+    <div class="container mx-auto px-4 py-8">
+        {% for assigned_course in assigned_courses %}
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h1 class="text-2xl font-bold text-gray-800">{{ assigned_course.course.title }}</h1>
+                    <div class="text-sm text-gray-600">
+                        <span class="font-semibold">Toplam Kurs Süresi:</span> {{ assigned_course.course.total_days }} Gün
+                        <span class="ml-4 font-semibold">Bitirilen Gün:</span> {{ assigned_course.completed_days }}
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between mb-8 overflow-x-auto pb-4">
+                    {% for i in assigned_course.course.total_days|get_range %}
+                        {% with day_num=i %}
+                            {# Kanca işaretleri için kontrol #}
+                            {% if day_num <= assigned_course.completed_days %} {# BURADAKİ İFADE KESİK GİBİ GÖRÜNÜYOR RESİMDE #}
+                                <div class="flex flex-col items-center flex-shrink-0">
+                                    <div class="bg-blue-500 rounded-full w-8 h-8 flex items-center justify-center text-white text-sm font-bold">
+                                        <i class="fas fa-check"></i> {# Tik işareti #}
+                                    </div>
+                                    {% if not forloop.last %}
+                                        <div class="h-1 bg-blue-500 w-16 -mt-4"></div> {# İlerleme çizgisi #}
+                                    {% endif %}
+                                </div>
+                            {% else %} {# Kilitli veya sonraki gün #}
+                                <div class="flex flex-col items-center flex-shrink-0">
+                                    <div class="bg-gray-300 rounded-full w-8 h-8 flex items-center justify-center text-gray-600 text-sm font-bold">
+                                        <i class="fas fa-lock"></i> {# Kilit işareti #}
+                                    </div>
+                                    {% if not forloop.last %}
+                                        <div class="h-1 bg-gray-300 w-16 -mt-4"></div> {# Kilitli çizgi #}
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    {% endfor %}
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {% for i in assigned_course.course.total_days|get_range %}
+                        {% with day_num=i %}
+                            {% if day_num <= assigned_course.completed_days %}
+                                {# Tamamlanmış gün #}
+                                <div class="bg-blue-100 border-2 border-blue-400 rounded-lg p-6 text-center shadow-md cursor-pointer hover:shadow-lg transition duration-200"
+                                     data-day="{{ day_num }}" data-assigned-course-id="{{ assigned_course.id }}" data-status="completed">
+                                    <h3 class="text-xl font-bold text-blue-800 mb-2">{{ day_num }}. Gün</h3>
+                                    <p class="text-blue-600">{{ assigned_course.course.exercises_per_day|default:"14" }} Egzersiz</p>
+                                    <p class="text-sm text-blue-500 mt-2">Tamamlandı</p>
+                                </div>
+                            {% elif day_num == assigned_course.next_day_to_complete %} {# BURAYI DİKKATLE KONTROL EDİN #}
+                                {# Sıradaki gün (aktif) #}
+                                <div class="bg-red-100 border-2 border-red-400 rounded-lg p-6 text-center shadow-md cursor-pointer hover:shadow-lg transition duration-200"
+                                     data-day="{{ day_num }}" data-assigned-course-id="{{ assigned_course.id }}" data-status="current">
+                                    <h3 class="text-xl font-bold text-red-800 mb-2">{{ day_num }}. Gün</h3>
+                                    <p class="text-red-600">{{ assigned_course.course.exercises_per_day|default:"14" }} Egzersiz</p>
+                                    <p class="text-sm text-red-500 mt-2">Şimdi Yap!</p>
+                                </div>
+                            {% else %}
+                                {# Kilitli günler #}
+                                <div class="bg-gray-100 border-2 border-gray-300 rounded-lg p-6 text-center shadow-md opacity-70 cursor-not-allowed">
+                                    <h3 class="text-xl font-bold text-gray-600 mb-2">{{ day_num }}. Gün</h3>
+                                    <p class="text-gray-500">{{ assigned_course.course.exercises_per_day|default:"14" }} Egzersiz</p>
+                                    <p class="text-sm text-gray-400 mt-2">Kilitli</p>
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% empty %}
+            <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                <p class="text-gray-600">Henüz size atanmış bir eğitim bulunmuyor.</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div id="dayDetailModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 flex items-center justify-center">
+        <div class="relative p-8 border w-96 shadow-lg rounded-md bg-white">
+            <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4" id="modalDayTitle"></h3>
+            <p class="text-gray-700 mb-6" id="modalDayContent">Bugünkü egzersizlerinizi tamamlamak için aşağıdaki butona tıklayın.</p>
+            
+            <form id="completeDayForm" method="post" action="">
+                {% csrf_token %}
+                <button type="submit" class="px-4 py-2 bg-green-600 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    Günü Tamamla
+                </button>
+            </form>
+            <button type="button" id="closeDayDetailModal" class="mt-3 px-4 py-2 bg-gray-300 text-gray-800 text-base font-font-medium rounded-md w-full shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300">
+                Kapat
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dayDetailModal = document.getElementById('dayDetailModal');
+            const closeDayDetailModalBtn = document.getElementById('closeDayDetailModal');
+            const modalDayTitle = document.getElementById('modalDayTitle');
+            const completeDayForm = document.getElementById('completeDayForm');
+
+            document.querySelectorAll('[data-status="current"]').forEach(dayBox => {
+                dayBox.addEventListener('click', function() {
+                    const dayNum = this.dataset.day;
+                    const assignedCourseId = this.dataset.assignedCourseId;
+                    
+                    modalDayTitle.textContent = `${dayNum}. Gün Detayı`;
+                    
+                    // Form action'ı dinamik olarak ayarla
+                    completeDayForm.action = `/student/egitimlerim/${assignedCourseId}/complete-day/${dayNum}/`; // URL'inizi buraya göre ayarlayın
+                    
+                    dayDetailModal.classList.remove('hidden');
+                });
+            });
+
+            closeDayDetailModalBtn.addEventListener('click', function() {
+                dayDetailModal.classList.add('hidden');
+            });
+
+            window.addEventListener('click', function(event) {
+                if (event.target == dayDetailModal) {
+                    dayDetailModal.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+{% endblock content %}

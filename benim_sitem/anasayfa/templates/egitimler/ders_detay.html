@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* Genel sayfa içeriği için üstten boşluk */
+    .ders-detay-container {
+        padding-top: 60px; /* Navbar ile arasına boşluk bırak */
+        padding-bottom: 40px;
+    }
+
+    /* Başlık stilini iyileştirme */
+    .ders-detay-container h2 {
+        font-size: 2.5rem; /* Daha büyük başlık */
+        color: #333;
+        margin-bottom: 25px; /* Altına boşluk */
+        text-align: center; /* Başlığı ortala */
+    }
+
+    /* Ders açıklama stili */
+    .ders-icerik-p {
+        font-size: 1.1rem;
+        color: #555;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+    /* Video kapsayıcısı */
+    .video-container {
+        position: relative;
+        padding-bottom: 56.25%; /* 16:9 oranı (9 / 16 * 100) */
+        height: 0;
+        overflow: hidden;
+        margin-bottom: 30px; /* Altına boşluk */
+        border-radius: .5rem;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15); /* Hafif gölge */
+        background-color: #000; /* Video yüklenirken siyah arka plan */
+    }
+
+    .video-container iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+    }
+
+    /* Buton ve geri dön linki alanı */
+    .action-buttons-section {
+        display: flex;
+        justify-content: center; /* Ortala */
+        align-items: center;
+        gap: 20px; /* Butonlar arası boşluk */
+        margin-top: 20px;
+    }
+</style>
+
+<div class="container ders-detay-container">
+    <div class="row">
+        <div class="col-12">
+            <h2>{{ ders.baslik }}</h2>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <p class="ders-icerik-p">{{ ders.icerik }}</p>
+        </div>
+    </div>
+
+    {% if ders.video_url %}
+        <div class="row justify-content-center">
+            <div class="col-md-9"> {# Daha geniş bir video alanı #}
+                <div class="video-container">
+                    {# YouTube video URL'sinden embed URL'si oluşturma #}
+                    {% comment %}
+                        Bu kısımda ders.video_url'nin bir YouTube linki olduğunu varsayıyoruz.
+                        Örnek: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+                        Embed linki: https://www.youtube.com/embed/dQw4w9WgXcQ
+                    {% endcomment %}
+                    {% if "youtube.com/watch?v=" in ders.video_url %}
+                        {% with video_id=ders.video_url|cut:"watch?v=" %}
+                        {% with youtube_embed_url="https://www.youtube.com/embed/"|add:video_id %}
+                            <iframe src="{{ youtube_embed_url }}"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen>
+                            </iframe>
+                        {% endwith %}
+                        {% endwith %}
+                    {% else %}
+                        {# Eğer video URL'si doğrudan bir mp4 dosyasıysa veya farklı bir kaynaktansa #}
+                        <video controls class="w-100 h-100">
+                            <source src="{{ ders.video_url }}" type="video/mp4">
+                            Tarayıcınız video etiketini desteklemiyor.
+                        </video>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="row justify-content-center">
+        <div class="col-md-9 action-buttons-section">
+            {% if user.is_authenticated %}
+                {% if ders.ders_tamamlama.tamamlandi %}
+                    <button class="btn btn-success btn-lg" disabled>✓ Tamamlandı</button>
+                {% else %}
+                    <button
+                        class="btn btn-primary btn-lg ders-tamamla-btn"
+                        data-ders-id="{{ ders.id }}">
+                        Tamamla
+                    </button>
+                {% endif %}
+            {% endif %}
+            <a href="{% url 'egitimler:egitim_detay' ders.egitim.id %}" class="btn btn-outline-secondary btn-lg">← Geri dön</a>
+        </div>
+    </div>
+
+    <script src="{% static 'js/ders_tamamla.js' %}"></script>
+</div>
+{% endblock %}

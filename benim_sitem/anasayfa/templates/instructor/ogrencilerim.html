@@ -1,0 +1,44 @@
+{% extends 'instructor/instructor_base.html' %}
+{% block title %}Eğitmen Paneli - Öğrenci Listesi{% endblock title %}
+{% block content %}
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Öğrenci Listesi</h1>
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <p>Öğrencileriniz burada listelenecek.</p>
+        {% if ogrenciler %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="py-3 px-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">ID</th>
+                            <th class="py-3 px-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Adı Soyadı</th>
+                            <th class="py-3 px-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Kullanıcı Adı</th>
+                            <th class="py-3 px-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">E-posta</th>
+                            <th class="py-3 px-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Eklendiği Tarih</th>
+                            <th class="py-3 px-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for relation in ogrenciler %}
+                            <tr class="border-b border-gray-200 hover:bg-gray-50">
+                                <td class="py-3 px-4 text-sm text-gray-800">{{ relation.student.id }}</td>
+                                <td class="py-3 px-4 text-sm text-gray-800"><a href="{% url 'instructor:ogrenci_detay' relation.student.id %}" class="text-blue-600 hover:underline">{{ relation.student.first_name }} {{ relation.student.last_name }}</a></td>
+                                <td class="py-3 px-4 text-sm text-gray-800">{{ relation.student.username }}</td>
+                                <td class="py-3 px-4 text-sm text-gray-800">{{ relation.student.email }}</td>
+                                <td class="py-3 px-4 text-sm text-gray-800">{{ relation.added_at|date:"d M Y H:i" }}</td>
+                                <td class="py-3 px-4 text-sm text-gray-800">
+                                    <a href="{% url 'instructor:ogrenci_detay' relation.student.id %}" class="text-blue-600 hover:text-blue-800 mr-2">Detay</a>
+                                    <form action="{% url 'instructor:ogrenci_cikar' relation.student.id %}" method="post" class="inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="text-red-600 hover:text-red-800" onclick="return confirm('Bu öğrenciyi listenizden çıkarmak istediğinizden emin misiniz?');">Çıkar</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-gray-600 mt-4">Henüz eklenmiş öğrenciniz bulunmuyor.</p>
+        {% endif %}
+    </div>
+{% endblock content %}

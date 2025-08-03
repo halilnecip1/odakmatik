@@ -1,0 +1,68 @@
+{% extends 'student/student_base.html' %}
+{% load static %}
+
+{% block title %}Profilim{% endblock title %}
+
+{% block content %}
+<div class="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+    <div class="w-full max-w-2xl bg-white p-8 rounded-lg shadow-md">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Profil Ayarları</h2>
+
+        <form method="post" enctype="multipart/form-data" action="{% url 'student:profile_update' %}" class="space-y-6">
+            {% csrf_token %}
+
+            <div class="flex flex-col items-center space-y-4">
+                <div class="relative w-32 h-32 rounded-full overflow-hidden border-4 border-blue-500">
+                    {% if user.profile.profile_picture %}
+                        <img id="profile_image_preview" src="{{ user.profile.profile_picture.url }}" alt="Profil Resmi" class="w-full h-full object-cover">
+                    {% else %}
+                        <img id="profile_image_preview" src="{% static 'default_profile_pic.png' %}" alt="Varsayılan Profil Resmi" class="w-full h-full object-cover">
+                    {% endif %}
+                </div>
+                <label for="profile_picture_input" class="cursor-pointer bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200" id="upload_button">
+                    <i class="fas fa-camera mr-2"></i> Fotoğraf Yükle
+                </label>
+                {{ form.profile_picture }}
+                <span id="file_name" class="text-sm text-gray-500">
+                    {% if form.profile_picture.value %}{{ form.profile_picture.value.name }}{% else %}Dosya seçilmedi{% endif %}
+                </span>
+                {% if form.profile_picture.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ form.profile_picture.errors }}</p>
+                {% endif %}
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Kullanıcı Adı:</label>
+                    <p class="p-3 bg-gray-100 rounded-lg text-gray-800">{{ user.username }}</p>
+                </div>
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">E-posta:</label>
+                    <p class="p-3 bg-gray-100 rounded-lg text-gray-800">{{ user.email }}</p>
+                </div>
+            </div>
+
+            <div>
+                <label for="{{ form.first_name.id_for_label }}" class="block text-gray-700 text-sm font-bold mb-2">{{ form.first_name.label }}</label>
+                {{ form.first_name }}
+                {% if form.first_name.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ form.first_name.errors }}</p>
+                {% endif %}
+            </div>
+            <div>
+                <label for="{{ form.last_name.id_for_label }}" class="block text-gray-700 text-sm font-bold mb-2">{{ form.last_name.label }}</label>
+                {{ form.last_name }}
+                {% if form.last_name.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ form.last_name.errors }}</p>
+                {% endif %}
+            </div>
+
+            <div class="flex justify-end">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition duration-200">
+                    Profilimi Güncelle
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}

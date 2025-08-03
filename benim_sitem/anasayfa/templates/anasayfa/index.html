@@ -1,0 +1,421 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load shop_filters %}
+
+
+{% block title %}Anasayfa | Odak Matik{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/slider.css' %}">
+{% endblock %}
+
+{% block content %}
+
+    
+    <div class="hero-slider">
+        <button class="slider-btn prev" onclick="prevSlide()">&#10094;</button> 
+        <div class="slides">
+            <div class="slide">
+                <section class="hero">
+                    <div class="hero-text animate-on-scroll">
+                        <h1>Odak Matik ile <span class="highlight">Hızlı Oku, Hemen Anla, Eğitimden Geri Kalma..!</span></h1>
+                        <p>Türkiye'nin en tatlı eğitimcisi <strong>Oğuzhan Gönçe</strong>'den odak ve hızlı okuma eğitimi platformu.</p>
+                        <div class="btn-group">
+                            <a href="hakkimizda" class="btn-primary">Bilgi Al</a>
+                            <a href="shop/home" class="btn-secondary">Hemen Satın Al</a>
+                        </div>
+                    </div>
+                    {# Resim yolları static olarak güncellendi #}
+                    <img src="{% static 'img/hoca.png' %}" alt="header hoca Görseli" style="width:400px; max-width:400px; height:auto;" class="animate-on-scroll" />
+                </section>
+            </div>
+            <div class="slide">
+                <section class="hero">
+                    <div class="hero-text animate-on-scroll">
+                        <h1>Odak Matik ile <span class="highlight">Gözünü Eğit, Zihnini Hızlandır!</span></h1>
+                        <p>Etkin, hızlı ve eğlenceli bir öğrenim için doğru yerdesin.</p>
+                        <div class="btn-group">
+                            <a href="hakkimizda" class="btn-primary">Daha Fazla</a>
+                            <a href="shop/home" class="btn-secondary">Başla</a>
+                        </div>
+                    </div>
+                    {# Resim yolları static olarak güncellendi #}
+                    <img src="{% static 'img/eğitimci.png' %}" alt="Eğitimci" style="width:400px; max-width:400px; height:auto;" class="animate-on-scroll" />
+                </section>
+            </div>
+        </div>
+        <button class="slider-btn next" onclick="nextSlide()">&#10095;</button> 
+    </div>
+
+
+
+    {# Hızlı Okuma Nedir? Section (YENİ TASARIM) #}
+    <section class="what-is-section py-1">
+        <div class="container my-5">
+            <div class="row align-items-center">
+                {# Sol Kısım: Görsel #}
+                <div class="col-lg-6 text-center mb-4 mb-lg-0">
+                    <div class="image-wrapper position-relative d-inline-block">
+                        <img src="{% static 'img/what_is_reading_new.jpg' %}" alt="Hızlı Okuma Nedir Görseli" class="img-fluid rounded-circle shadow-lg what-is-image">
+                        
+                    </div>
+                </div>
+                {# Sağ Kısım: Metin İçerik #}
+                <div class="col-lg-6">
+                    <h5 class="text-danger fw-bold mb-2">Her Yönüyle</h5>
+                    <h2 class="display-5 fw-bold mb-4">
+                        Odak Matik Eğitim <span class="text-primary">Platformu Nedir?</span>
+                    </h2>
+                    <p class="lead mb-4">
+                        Odak Matik'in en önemli farkı Türkiye'deki öğrencilerin odak ve dikkat sorunlarını çözmek için geliştirilmiş olmasıdır. Odak Matik, okumayı ve odaklanmayı öğreterek her yönüyle okuma becerinizi ve dikkat gelişimini destekler.
+                    </p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li class="d-flex align-items-start mb-3">
+                                    <i class="fas fa-check-circle text-success me-2 mt-1"></i>
+                                    <span>Dikkat dağınıklığı ve okuduğunu tam anlayamama sorununa yönelik çözümler</span>
+                                </li>
+                                <li class="d-flex align-items-start mb-3">
+                                    <i class="fas fa-check-circle text-success me-2 mt-1"></i>
+                                    <span>Hızlı okuma ve anlamaya yönelik temel okuyucu eğitimleri</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li class="d-flex align-items-start mb-3">
+                                    <i class="fas fa-check-circle text-success me-2 mt-1"></i>
+                                    <span>Eğitmenlere yönelik tam donanımlı bir eğitim arşivi</span>
+                                </li>
+                                <li class="d-flex align-items-start mb-3">
+                                    <i class="fas fa-check-circle text-success me-2 mt-1"></i>
+                                    <span>Kurumlara özel çözümler ve eğitimler</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <a href="hakkimizda" class="btn btn-primary btn-lg mt-3">Detaylı Bilgi</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {# Odak Matik Kimlere Fayda Sağlar? Section #}
+    <section class="who-benefits-section bg-light py-5">
+        <div class="container my-5">
+            <h5 class="text-center fw-bold text-danger mb-2">Odak Matik Eğitim Platformu</h5> 
+            <h2 class="display-5 fw-bold text-center mb-5">
+                Kimlere <span class="text-success">Fayda Sağlar?</span>
+            </h2>
+            <div class="row gx-0 gy-3">
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 text-center p-4">
+                        <div class="card-icon mb-4">
+                            <i class="fas fa-graduation-cap fa-3x text-info"></i>
+                        </div>
+                        <h5 class="card-title fw-bold mb-3">Öğrenciler</h5>
+                        <p class="card-text">
+                            Sınavlara hazırlanan öğrenciler, okuma hızlarını artırarak daha fazla konuya hakim olabilir ve ders çalışma sürelerini optimize edebilirler.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 text-center p-4">
+                        <div class="card-icon mb-4">
+                            <i class="fas fa-briefcase fa-3x text-warning"></i>
+                        </div>
+                        <h5 class="card-title fw-bold mb-3">Profesyoneller</h5>
+                        <p class="card-text">
+                            İş dünyasındaki profesyoneller, raporları, e-postaları ve sektör yayınlarını daha hızlı okuyarak verimliliklerini artırabilirler.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 text-center p-4">
+                        <div class="card-icon mb-4">
+                            <i class="fas fa-book-reader fa-3x text-danger"></i>
+                        </div>
+                        <h5 class="card-title fw-bold mb-3">Kitap Kurtları</h5>
+                        <p class="card-text">
+                            Kitap okumayı sevenler, daha kısa sürede daha fazla kitap bitirerek bilgi birikimlerini ve kültürel seviyelerini yükseltebilirler.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 text-center p-4">
+                        <div class="card-icon mb-4">
+                            <i class="fas fa-brain fa-3x text-primary"></i>
+                        </div>
+                        <h5 class="card-title fw-bold mb-3">Yaşam Boyu Öğrenenler</h5>
+                        <p class="card-text">
+                            Sürekli yeni şeyler öğrenmek isteyen herkes, hızlı okuma teknikleriyle bilgiye daha hızlı erişebilir ve öğrenme süreçlerini hızlandırabilir.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 text-center p-4">
+                        <div class="card-icon mb-4">
+                            <i class="fas fa-comments fa-3x text-secondary"></i>
+                        </div>
+                        <h5 class="card-title fw-bold mb-3">Sunum Yapanlar</h5>
+                        <p class="card-text">
+                            Sunum materyallerini veya konuşma metinlerini hızlıca tarayarak ana noktaları yakalayabilir, daha akıcı sunumlar hazırlayabilirler.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 text-center p-4">
+                        <div class="card-icon mb-4">
+                            <i class="fas fa-newspaper fa-3x text-dark"></i>
+                        </div>
+                        <h5 class="card-title fw-bold mb-3">Haber Takipçileri</h5>
+                        <p class="card-text">
+                            Güncel haberleri ve gelişmeleri daha hızlı takip ederek bilgi çağının gerisinde kalmaktan kurtulabilir, gündemden haberdar olabilirler.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {# Features Section #}
+    <section class="features-section py-5">
+        <div class="container my-5">
+            <h2 class="display-5 fw-bold text-center mb-5">
+                Odak Matik'in <span class="text-info">Öne Çıkan Özellikleri</span>
+            </h2>
+            <div class="row g-4 text-center">
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-item p-4">
+                        <i class="fas fa-tachometer-alt fa-4x text-primary mb-3"></i>
+                        <h4 class="fw-bold mb-2">Odak Artışı</h4>
+                        <p class="text-muted">Odak hızınızı bilimsel yöntemlerle iki katına çıkarın.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-item p-4">
+                        <i class="fas fa-lightbulb fa-4x text-success mb-3"></i>
+                        <h4 class="fw-bold mb-2">Anlama Gelişimi</h4>
+                        <p class="text-muted">Anlama oranınızı koruyarak veya artırarak okuyun.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-item p-4">
+                        <i class="fas fa-brain fa-4x text-warning mb-3"></i>
+                        <h4 class="fw-bold mb-2">Konsantrasyon</h4>
+                        <p class="text-muted">Dikkat dağıtıcı faktörleri minimize edin, odaklanın.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-item p-4">
+                        <i class="fas fa-clock fa-4x text-danger mb-3"></i>
+                        <h4 class="fw-bold mb-2">Zaman Tasarrufu</h4>
+                        <p class="text-muted">Daha az zamanda daha fazla bilgi edinin.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+
+
+
+    {# How It Works Section #}
+    <section class="how-it-works-section py-5">
+        <div class="container my-5">
+            <h2 class="display-5 fw-bold text-center mb-5">
+                Odak Matik <span class="text-primary">Nasıl Çalışır?</span>
+            </h2>
+            <div class="row text-center justify-content-center">
+                
+                <div class="col-md-6 col-lg-3 mb-4">
+                    <div class="step-item p-4">
+                        <div class="step-number mb-3">1</div>
+                        <i class="fas fa-diagnoses fa-3x text-success mb-3"></i>
+                        <h4 class="fw-bold mb-2">Seviye Tespiti</h4>
+                        <p class="text-muted">Mevcut okuma hızınızı ve anlama seviyenizi belirleyin.</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-3 mb-4">
+                    <div class="step-item p-4">
+                        <div class="step-number mb-3">2</div>
+                        <i class="fas fa-chalkboard-teacher fa-3x text-warning mb-3"></i>
+                        <h4 class="fw-bold mb-2">Kişiselleştirilmiş Eğitim</h4>
+                        <p class="text-muted">Size özel hazırlanan egzersiz ve derslerle başlayın.</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-3 mb-4">
+                    <div class="step-item p-4">
+                        <div class="step-number mb-3">3</div>
+                        <i class="fas fa-chart-line fa-3x text-danger mb-3"></i>
+                        <h4 class="fw-bold mb-2">İlerleme Takibi</h4>
+                        <p class="text-muted">Okuma hızınızı ve anlama oranınızı takip edin.</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-3 mb-4">
+                    <div class="step-item p-4">
+                        <div class="step-number mb-3">4</div>
+                        <i class="fas fa-medal fa-3x text-info mb-3"></i>
+                        <h4 class="fw-bold mb-2">Başarıya Ulaşın</h4>
+                        <p class="text-muted">Hızlı ve etkili okuma becerilerinizi geliştirin.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+
+
+
+
+    {# How Can We Help Section (Icons) #}
+    <section class="how-can-we-help-section py-5">
+        <div class="container">
+            <h5 class="text-center fw-bold text-danger mb-2">Odak Matik Eğitim Platformu</h5> 
+            <h2 class="display-5 fw-bold text-center mb-4">Nasıl Yardımcı Olabiliriz?</h2>
+            <div class="row justify-content-center g-3">
+                <div class="col-md-6 col-lg-4">
+                    <button class="help-button card h-100 text-center p-3" onclick="window.location.href='iletisim'">
+                        <i class="fas fa-book-open fa-3x mb-2 text-primary"></i> {# Kitap ikonu #}
+                        <h5 class="fw-bold mb-1">Online Hızlı Okuma Kursu Almak İstiyorum</h5>
+                    </button>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <button class="help-button card h-100 text-center p-3" onclick="window.location.href='iletisim'">
+                        <i class="fas fa-chalkboard-teacher fa-3x mb-2 text-success"></i> {# Öğretmen ikonu #}
+                        <h5 class="fw-bold mb-1">Odak Eğitmeni Olmak İstiyorum</h5>
+                    </button>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <button class="help-button card h-100 text-center p-3" onclick="window.location.href='iletisim'">
+                        <i class="fas fa-building fa-3x mb-2 text-warning"></i> {# Bina ikonu #}
+                        <h5 class="fw-bold mb-1">Hızlı Okuma Eğitmeni Olmak İstiyorum</h5>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+
+
+
+
+    {# Success Story / Info Section #}
+    <section class="success-info-section py-5">
+        <div class="container my-5">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <div class="image-wrapper p-3">
+                        <img src="{% static 'img/students.jpg' %}" alt="Students" class="img-fluid rounded-3 shadow-lg">
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="text-content">
+                        <h2 class="display-5 fw-bold mb-4">Anlam Kaybı Yaşamadan Okuma Hızlarını Artırdılar!</h2>
+                        <p class="lead text-muted mb-4">Odak Matik Eğitimleri, 2. Sınıftan yetişkinlere kadar herkes içindir. Eğitimlerimiz sayesinde siz de anlayarak hızlı okuma tekniklerini öğrenebilir, göz sağlığınızı koruyabilir, dikkat ve konsantrasyonunuzu geliştirebilirsiniz.</p>
+                        
+                        {# Logo ve Sertifika Bilgisi - İsteğe Bağlı #}
+                        <div class="d-flex align-items-center mb-4">
+                            <img src="{% static 'img/logo.png' %}" alt="Odak Matik Logo" class="img-fluid me-3" style="max-width: 80px;">
+                            <div>
+                                <small class="text-muted d-block">Türkiye Odak Matik Kurucusu </small>
+                                <strong class="d-block">Oğuzhan Gönçe</strong>
+                                <small class="text-muted d-block">Tarafından Geliştirilmiştir</small>
+                            </div>
+                        </div>
+
+                        {# Sayaç Alanı #}
+                        <div class="row text-center mt-5">
+                            <div class="col-4">
+                                <h3 class="display-6 fw-bold text-danger" id="counterStudent">0</h3>
+                                <p class="text-muted">Öğrenci</p>
+                            </div>
+                            <div class="col-4">
+                                <h3 class="display-6 fw-bold text-danger" id="counterTrainer">0</h3>
+                                <p class="text-muted">Eğitmen</p>
+                            </div>
+                            <div class="col-4">
+                                <h3 class="display-6 fw-bold text-danger" id="counterInstitution">0</h3>
+                                <p class="text-muted">Kurum</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    {# Blog / Articles Section #}
+    <section class="articles-section py-5 bg-light">
+        <div class="container my-5">
+            <h5 class="text-center fw-bold text-danger mb-2">Odak Matik Eğitim Platformu</h5> 
+            <h2 class="display-5 fw-bold text-center mb-5">Makaleler</h2>
+            <div class="row g-4 justify-content-center">
+                
+                <div class="col-md-6 col-lg-4">
+                    <div class="article-card card h-100 border-0 shadow-sm">
+                        <img src="{% static 'img/article1.jpg' %}" class="card-img-top" alt="Makale Görseli 1">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title fw-bold mb-2">Beyin Çürümesi</h5>
+                            <p class="card-text text-muted mb-auto">"Beyin çürümesi" ifadesi 2023-2024 yılları arasında kullanım sıklığı %230 oranında artmış. Oxford Üniversitesi de 2024 yılının kelimesi olarak... </p>
+                            <a href="{% url 'articles' %}" class="btn btn-link text-decoration-none p-0 mt-3 align-self-start">Devamını Oku <i class="fas fa-arrow-right fa-sm ms-1"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="article-card card h-100 border-0 shadow-sm">
+                        <img src="{% static 'img/article2.jpg' %}" class="card-img-top" alt="Makale Görseli 2">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title fw-bold mb-2">Yapay Zeka Destekli Odak Matik Hızlı Okuma ve Dikkat...</h5>
+                            <p class="card-text text-muted mb-auto">Yapay Zeka Destekli Odak Matik Hızlı Okuma ve Dikkat Yazılımı çocukların okuma hızını ve anlama yeteneğini geliştiriyor.</p>
+                            <a href="{% url 'articles' %}" class="btn btn-link text-decoration-none p-0 mt-3 align-self-start">Devamını Oku <i class="fas fa-arrow-right fa-sm ms-1"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="article-card card h-100 border-0 shadow-sm">
+                        <img src="{% static 'img/article3.jpg' %}" class="card-img-top" alt="Makale Görseli 3">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title fw-bold mb-2">Odak Matik Hızlı Okuma ve Dikkat Kitabı: Eğitimde...</h5>
+                            <p class="card-text text-muted mb-auto">Eğitimde yenilikçi metodlar ve kaliteli içerikler, çocukların okuma ve dikkat becerilerini geliştirmekte büyük rol oynar.</p>
+                            <a href="{% url 'articles' %}" class="btn btn-link text-decoration-none p-0 mt-3 align-self-start">Devamını Oku <i class="fas fa-arrow-right fa-sm ms-1"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="text-center mt-5">
+                <a href="{% url 'articles' %}" class="btn btn-danger btn-lg px-5 py-3 rounded-pill fw-bold">Tüm Makaleleri Görüntüle</a>
+            </div>
+        </div>
+    </section>
+
+
+
+
+
+
+
+
+
+{% endblock content %}
+
+{% block extra_js %}
+    {# SLIDER'A ÖZEL JAVASCRIPT BURAYA EKLENİYOR #}
+    <script src="{% static 'js/slider.js' %}"></script>
+{% endblock %}

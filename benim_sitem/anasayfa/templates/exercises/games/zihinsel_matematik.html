@@ -1,0 +1,167 @@
+{% extends 'student/student_base.html' %}
+
+{% block title %}{{ game.name }}{% endblock title %}
+
+{% block content %}
+{% csrf_token %}
+
+{# Arka planı ve ortalamayı sağlayan ana konteyner #}
+<div class="w-full h-full flex items-center justify-center bg-blue-50 p-4">
+
+    {# Oyunun kendisini içeren kart #}
+    <div class="bg-white p-6 md:p-10 rounded-2xl shadow-xl w-full max-w-4xl text-center">
+        
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-2">{{ game.name }}</h1>
+        <p class="text-gray-500 mb-8">{{ game.description }}</p>
+
+        <div id="game-area">
+            {# Skor ve Süre Göstergesi #}
+            <div class="flex justify-around items-center bg-gray-100 p-4 rounded-xl mb-8">
+                <div class="text-xl md:text-2xl font-semibold text-center">
+                    <span class="text-gray-500 block text-sm">SÜRE</span>
+                    <span id="timer" class="text-red-500 font-bold text-4xl">60</span>
+                </div>
+                <div class="border-l-2 h-12 border-gray-300"></div> {# Ayırıcı Çizgi #}
+                <div class="text-xl md:text-2xl font-semibold text-center">
+                    <span class="text-gray-500 block text-sm">SKOR</span>
+                    <span id="score" class="text-green-500 font-bold text-4xl">0</span>
+                </div>
+            </div>
+
+            {# Soru Alanı #}
+            <div id="question-area" class="mb-6 h-24 flex items-center justify-center">
+                <p id="question" class="text-7xl md:text-8xl font-bold text-gray-700 tracking-wider"></p>
+            </div>
+
+            {# Cevap Giriş Alanı #}
+            <input type="number" id="answer-input" class="w-full max-w-md mx-auto p-4 text-center text-3xl border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition" placeholder="Cevabı buraya yaz...">
+        </div>
+        
+        <div id="game-over-area" class="hidden">
+            <h2 class="text-5xl font-bold text-blue-600">Oyun Bitti!</h2>
+            <p class="text-xl mt-4">Tebrikler, harika bir iş çıkardın.</p>
+            <div class="mt-8 text-2xl space-y-3">
+                <p>Toplam Skor: <span id="final-score" class="font-bold"></span></p>
+                <p>Doğru Cevap: <span id="final-correct" class="font-bold text-green-500"></span></p>
+                <p>Yanlış Cevap: <span id="final-wrong" class="font-bold text-red-500"></span></p>
+            </div>
+            <button onclick="startGame()" class="mt-10 px-10 py-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200 text-2xl font-bold">
+                Yeniden Oyna
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block extra_js %}
+<script>
+    // --- JAVASCRIPT KISMI HİÇ DEĞİŞMEDİ ---
+    // (Bir önceki cevaptaki çalışan JavaScript kodunun aynısı buraya gelecek)
+    document.addEventListener('DOMContentLoaded', function() {
+        const gameArea = document.getElementById('game-area');
+        const gameOverArea = document.getElementById('game-over-area');
+        const timerEl = document.getElementById('timer');
+        const scoreEl = document.getElementById('score');
+        const questionEl = document.getElementById('question');
+        const answerInput = document.getElementById('answer-input');
+        const finalScoreEl = document.getElementById('final-score');
+        const finalCorrectEl = document.getElementById('final-correct');
+        const finalWrongEl = document.getElementById('final-wrong');
+        const GAME_DURATION = 60;
+        let score, timer, timeLeft, gameInterval, currentAnswer;
+        let correctAnswers, wrongAnswers;
+
+        function startGame() {
+            score = 0;
+            correctAnswers = 0;
+            wrongAnswers = 0;
+            timeLeft = GAME_DURATION;
+            gameArea.classList.remove('hidden');
+            gameOverArea.classList.add('hidden');
+            answerInput.value = '';
+            answerInput.disabled = false;
+            answerInput.focus();
+            updateScore();
+            generateQuestion();
+            timerEl.textContent = timeLeft;
+            if (gameInterval) clearInterval(gameInterval);
+            gameInterval = setInterval(() => {
+                timeLeft--;
+                timerEl.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function endGame() {
+            clearInterval(gameInterval);
+            answerInput.disabled = true;
+            gameArea.classList.add('hidden');
+            gameOverArea.classList.remove('hidden');
+            finalScoreEl.textContent = score;
+            finalCorrectEl.textContent = correctAnswers;
+            finalWrongEl.textContent = wrongAnswers;
+            saveResults();
+        }
+
+        function generateQuestion() {
+            const num1 = Math.floor(Math.random() * 20) + 1; // Sayıları biraz büyüttük
+            const num2 = Math.floor(Math.random() * 20) + 1;
+            currentAnswer = num1 + num2;
+            questionEl.textContent = `${num1} + ${num2}`;
+        }
+
+        function updateScore() {
+            scoreEl.textContent = score;
+        }
+
+        window.startGame = startGame;
+
+        answerInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !answerInput.disabled) {
+                const userAnswer = parseInt(answerInput.value, 10);
+                if (!isNaN(userAnswer)) {
+                    if (userAnswer === currentAnswer) {
+                        score += 10;
+                        correctAnswers++;
+                    } else {
+                        score -= 5;
+                        wrongAnswers++;
+                    }
+                    updateScore();
+                    generateQuestion();
+                    answerInput.value = '';
+                }
+            }
+        });
+
+        function saveResults() {
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            fetch("{% url 'exercises:record_attempt_api' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify({
+                    game_slug: '{{ game.slug }}',
+                    score: score,
+                    correct: correctAnswers,
+                    wrong: wrongAnswers,
+                    duration: GAME_DURATION
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('API Response:', data);
+            })
+            .catch(error => {
+                console.error('API Error:', error);
+            });
+        }
+
+        startGame();
+    });
+</script>
+{% endblock extra_js %}

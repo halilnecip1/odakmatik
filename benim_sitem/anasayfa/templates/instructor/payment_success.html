@@ -1,0 +1,30 @@
+<!-- benim_sitem/anasayfa/templates/instructor/payment_success.html -->
+{% extends 'instructor/instructor_base.html' %}
+{% load static %}
+
+{% block title %}Ödeme Başarılı{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 flex items-center justify-center min-h-[calc(100vh-100px)]"> {# Sayfayı ortalamak için min-h ekledik #}
+    <div class="bg-white rounded-lg shadow-xl p-8 max-w-md w-full text-center border border-green-200">
+        <div class="bg-gradient-to-br from-green-400 to-green-600 p-6 rounded-full inline-flex items-center justify-center mb-6 shadow-lg">
+            <i class="fas fa-check-circle text-white text-5xl"></i>
+        </div>
+        
+        <h3 class="text-3xl font-bold text-green-700 mb-4">Ödeme Başarılı!</h3>
+        <p class="text-gray-700 text-lg mb-6">Siparişiniz başarıyla alındı ve kredileriniz hesabınıza eklendi.</p>
+        <p class="text-gray-600 text-sm mb-8">Herhangi bir sorun yaşamanız durumunda lütfen destek ile iletişime geçin.</p>
+        
+        <div class="flex flex-col space-y-4">
+            <a href="{% url 'instructor:my_credits' %}" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition duration-200 flex items-center justify-center space-x-2">
+                <i class="fas fa-coins"></i>
+                <span>Kredilerime Git</span>
+            </a>
+            <a href="{% url 'instructor:dashboard' %}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-6 rounded-lg shadow-md transition duration-200 flex items-center justify-center space-x-2">
+                <i class="fas fa-home"></i>
+                <span>Ana Sayfaya Dön</span>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

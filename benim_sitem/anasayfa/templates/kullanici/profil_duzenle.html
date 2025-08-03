@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Profil Düzenle | Odak Matik{% endblock %} {# Başlığı düzenledim, isteğe bağlı #}
+
+{% block extra_css %}
+    <style>
+        /* Profil düzenleme sayfasının içeriğinin navbarın altından başlamasını sağlar */
+        .profile-edit-content {
+            /* Navbar yüksekliği 100px. Başlık için en az 100px + ek boşluk (30px) */
+            padding-top: 130px; /* Navbar'ın altından başlık için boşluk */
+            padding-bottom: 50px; /* Sayfanın altına da biraz boşluk ekler */
+        }
+
+        /* Başlığa ve diğer elementlere ek boşluk ayarları */
+        .profile-edit-content h2 {
+            margin-top: 0; /* Otomatik üst boşluğu sıfırla */
+            margin-bottom: 1.5rem; /* Başlık ile form arası boşluk */
+        }
+
+        /* Eğer Bootstrap'in varsayılan form label ve input boşlukları yeterliyse dokunmayız.
+           Ek boşluk gerekirse mb-3 sınıflarını kontrol edebilirsiniz. */
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-edit-content"> {# Yeni bir kapsayıcı div ekleyelim ve ona özel bir sınıf verelim #}
+    <div class="container"> {# Bootstrap container'ı içindeki içeriği ortalar #}
+        <h2>Profil Bilgilerini Güncelle</h2>
+        {% if hata %}
+            <div class="alert alert-danger">{{ hata }}</div>
+        {% endif %}
+        {% if mesaj %}
+            <div class="alert alert-success">{{ mesaj }}</div>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="kullanici_adi" class="form-label">Kullanıcı Adı</label>
+                <input type="text" class="form-control" id="username" name="kullanici_adi" value="{{ kullanici.username }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" value="{{ kullanici.email }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="sifre" class="form-label">Yeni Şifre (isteğe bağlı)</label>
+                <input type="password" class="form-control" id="sifre" name="sifre">
+            </div>
+            <button type="submit" class="btn btn-primary">Güncelle</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

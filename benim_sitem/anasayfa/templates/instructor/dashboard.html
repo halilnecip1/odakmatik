@@ -1,0 +1,185 @@
+{% extends 'instructor/instructor_base.html' %}
+{% load static %} {# static dosyaları kullanmak için bu satır gereklidir #}
+
+{% block title %}Eğitmen Paneli - Ana Ekran{% endblock title %}
+
+{% block content %}
+    <style>
+        /* Kitaplık görseli için animasyon */
+        @keyframes slideBackground {
+            0% { background-position: 0% 0%; }   /* Sol üst */
+            25% { background-position: 100% 100%; } /* Sağ alt */
+            50% { background-position: 0% 100%; } /* Sol alt */
+            75% { background-position: 100% 0%; } /* Sağ üst */
+            100% { background-position: 0% 0%; } /* Tekrar sol üst */
+        }
+
+        .animated-library-bg {
+            /* Kendi projenizdeki resmin URL'sini buraya ekleyin */
+            /* Resminizin yolu: /static/img/kitaplik.jpg ise */
+            background-image: url('{% static "img/kitaplik.jpg" %}'); 
+            background-size: 130% auto; /* Görselin kapsayıcıdan biraz daha küçük olmasını sağlayarak kaymayı görünür hale getirir */
+            background-repeat: no-repeat;
+            animation: slideBackground 50s infinite linear; /* Animasyon ayarları, 'alternate' kaldırıldı */
+            height: 400px; /* Görselin yüksekliğini sabit tut */
+            width: 100%;
+        }
+
+        /* Responsive ayarlar için medya sorguları */
+        @media (max-width: 768px) {
+            .animated-library-bg {
+                height: 250px; /* Daha küçük ekranlarda yüksekliği ayarla */
+            }
+        }
+    </style>
+
+
+    {# Yeni ana kapsayıcı div, overflow-hidden burada değil #}
+    <div class="relative mb-6">
+        {# Kitaplık görselini ve yuvarlak köşeleri sağlayan div #}
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            {# Hareketli kitaplık görseli için div kullanıldı #}
+            <div class="animated-library-bg rounded-lg"></div>
+        </div>
+        
+        {# Eğitmen profil bilgilerini içeren kutucuk #}
+        {# Konumlandırma sol alta ve yarısı dışarıda olacak şekilde ayarlandı, z-index artırıldı #}
+        <div class="absolute bottom-[-40px] left-4 bg-white rounded-lg shadow-lg p-6 flex items-center space-x-4 z-20 min-w-[300px] sm:min-w-[400px]">
+            {# Eğitmen profil fotoğrafı veya baş harfleri #}
+            <div class="relative flex items-center justify-center h-20 w-20 rounded-full border-4 border-blue-500 bg-gray-200 text-gray-700 text-3xl font-bold overflow-hidden">
+                {% if request.user.is_authenticated and request.user.profile.profile_picture %}
+                    <img src="{{ request.user.profile.profile_picture.url }}" alt="Profil Resmi" class="h-full w-full object-cover">
+                {% else %}
+                    {# Eğer profil resmi yoksa, adın ve soyadın baş harflerini göster #}
+                    {# BURADAKİ DEĞİŞİKLİK #}
+                    {% if request.user.is_authenticated and request.user.first_name and request.user.last_name %}
+                        {{ request.user.first_name|first|upper }}{{ request.user.last_name|first|upper }}
+                    {% elif request.user.is_authenticated and request.user.first_name %}
+                        {{ request.user.first_name|first|upper }}
+                    {% elif request.user.is_authenticated and request.user.last_name %}
+                        {{ request.user.last_name|first|upper }}
+                    {% else %}
+                        {# Ne resim ne de isim/soyisim varsa kullanıcı adının baş harfini göster (veya varsayılan) #}
+                        {{ request.user.username|first|upper }}
+                    {% endif %}
+                {% endif %}
+            </div>
+            <div>
+                {# Eğitmen Adı ve Soyadı veya Kullanıcı Adı #}
+                <h2 class="font-semibold text-gray-900">
+                    {# BURADAKİ DEĞİŞİKLİK #}
+                    {% if request.user.is_authenticated and request.user.first_name and request.user.last_name %}
+                        {{ request.user.first_name }} {{ request.user.last_name }}
+                    {% elif request.user.is_authenticated and request.user.first_name %}
+                        {{ request.user.first_name }}
+                    {% elif request.user.is_authenticated and request.user.last_name %}
+                        {{ request.user.last_name }}
+                    {% else %}
+                        {{ request.user.username }}
+                    {% endif %}
+                </h2>
+                <p class="text-gray-600">{{ request.user.email }}</p>
+            </div>
+        </div>
+    </div>
+
+    {# Profil kutucuğunun yerden kazanması için boşluk ekliyoruz #}
+    <div class="mt-[40px] mb-6"> 
+        <div class="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4">
+            {# Sınıfa Göre Filtrele Formu (Yeni) #}
+            <form method="GET" action="{% url 'instructor:dashboard' %}" class="relative w-full md:w-1/2">
+                <select name="class_filter" onchange="this.form.submit()" class="block appearance-none w-full bg-gray-100 border border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-blue-500">
+                    {% for option in class_filter_options %}
+                        <option value="{{ option.value }}" {% if option.value == selected_class_filter %}selected{% endif %}>{{ option.label }}</option>
+                    {% endfor %}
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                </div>
+                {# Mevcut arama sorgusunu korumak için gizli input #}
+                {% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
+            </form>
+            {# Arama çubuğu formu #}
+            <form method="GET" action="{% url 'instructor:dashboard' %}" class="w-full md:w-1/2">
+                <input type="text" name="q" placeholder="Arama..." class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" value="{{ query|default:'' }}">
+                {# Mevcut sınıf filtresini korumak için gizli input #}
+                {% if selected_class_filter %}<input type="hidden" name="class_filter" value="{{ selected_class_filter }}">{% endif %}
+            </form>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% if ogrenciler %} {# Eğer gösterilecek ogrenciler listesi boş değilse kartları göster #}
+            {% for relation in ogrenciler %} {# ogrenciler listesindeki her bir 'relation' (InstructorStudent objesi) için döngü #}
+                <div class="bg-white rounded-lg shadow-md p-4">
+                    <div class="flex items-center space-x-3 mb-3">
+                        {# Öğrenci profil fotoğrafı veya baş harfleri #}
+                        <div class="relative flex items-center justify-center h-12 w-12 rounded-full bg-gray-200 text-gray-700 text-xl font-bold overflow-hidden">
+                            {% if relation.student.profile.profile_picture %}
+                                <img src="{{ relation.student.profile.profile_picture.url }}" alt="{{ relation.student.username }} Profil Resmi" class="h-full w-full object-cover">
+                            {% else %}
+                                {# Eğer öğrencinin profil resmi yoksa, adın ve soyadın baş harflerini göster #}
+                                {% if relation.student.profile.first_name and relation.student.profile.last_name %}
+                                    {{ relation.student.profile.first_name|first|upper }}{{ relation.student.profile.last_name|first|upper }}
+                                {% elif relation.student.profile.first_name %}
+                                    {{ relation.student.profile.first_name|first|upper }}
+                                {% elif relation.student.profile.last_name %}
+                                    {{ relation.student.profile.last_name|first|upper }}
+                                {% else %}
+                                    {# Ne resim ne de isim/soyisim varsa kullanıcı adının baş harfini göster #}
+                                    {{ relation.student.username|first|upper }}
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                        <div>
+                            {# Öğrencinin adı ve soyadı boşsa kullanıcı adını göster #}
+                            <h3 class="font-semibold text-gray-900">
+                                {% if relation.student.profile.first_name and relation.student.profile.last_name %}
+                                    {{ relation.student.profile.first_name }} {{ relation.student.profile.last_name }}
+                                {% elif relation.student.profile.first_name %}
+                                    {{ relation.student.profile.first_name }}
+                                {% elif relation.student.profile.last_name %}
+                                    {{ relation.student.profile.last_name }}
+                                {% else %}
+                                    {{ relation.student.username }}
+                                {% endif %}
+                            </h3>
+                            {# Öğrencinin sınıf bilgisini kategori olarak göster #}
+                            {% if relation.student_class %}
+                                <p class="text-sm text-gray-600">Sınıf: {{ relation.student_class_category }} ({{ relation.student_class }}. Sınıf)</p>
+                            {% else %}
+                                <p class="text-sm text-gray-600">Sınıf: Belirtilmemiş</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {# Bitiş tarihi bilgisini remaining_time özelliğinden al #}
+                    <p class="text-sm text-gray-500 mb-3"> Yazılım Bitiş Tarihi: <strong>{{ relation.remaining_time }}</strong></p> 
+                    
+                    {# Öğrenci detay sayfasına gitmek için link #}
+                    <a href="{% url 'instructor:ogrenci_detay' relation.student.id %}" class="block w-full text-center bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-200">Profili</a>
+                    
+                    <div class="relative mt-3">
+                        <form action="{% url 'instructor:assign_student_class' relation.student.id %}" method="post" class="flex items-center space-x-2">
+                            {% csrf_token %}
+                            <select name="student_class" onchange="this.form.submit()" class="block appearance-none w-full bg-gray-100 border border-gray-300 text-gray-700 py-2 px-3 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-blue-500 text-sm">
+                                <option value="">Sınıf Atayın</option>
+                                {# class_options_for_assignment listesi view'dan geliyor (sayısal sınıflar) #}
+                                {% for i in class_options_for_assignment %} 
+                                    <option value="{{ i }}" {% if relation.student_class == i %}selected{% endif %}>{{ i }}. Sınıf</option>
+                                {% endfor %}
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %} {# Eğer ogrenciler listesi boşsa bu mesajı göster #}
+            <div class="bg-white rounded-lg shadow-md p-6 text-center col-span-full">
+                <p class="text-gray-600">Henüz eklenmiş öğrenciniz bulunmuyor. Öğrenci eklemek için <a href="{% url 'instructor:ogrenci_ekle' %}" class="text-blue-600 hover:underline">buraya tıklayın</a>.</p>
+            </div>
+        {% endif %}
+    </div>
+{% endblock content %}

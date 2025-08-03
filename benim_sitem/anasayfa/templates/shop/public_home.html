@@ -1,0 +1,86 @@
+{# anasayfa/templates/shop/public_home.html #}
+{% extends 'base.html' %}
+{% load shop_filters %}
+
+{% block content %}
+<div class="container my-5">
+    {# Yazılımlar Bölümü ... (Değişiklik yok) #}
+    <h2 class="mb-4">Yazılımlar</h2>
+    <div class="row">
+        {% for p in products %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 shadow-sm p-3 d-flex flex-column">
+                <h4 class="card-title">{{ p.title }}</h4>
+                <p class="card-text">{{ p.description }}</p>
+                <p class="card-text fw-bold">{{ p.price_cents|currency_format }} ₺</p>
+
+                <div class="mt-auto">
+                    <a href="{% url 'kullanici:giris' %}?next={{ request.path }}" class="btn btn-danger w-100">Giriş Yaparak Satın Al</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <hr class="my-5">
+
+    {# Kitaplar Bölümü ... (Değişiklik yok) #}
+    <h2 class="mb-4">Kitaplar</h2>
+    <div class="row">
+        {% for kitap in kitaplar %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 shadow-sm p-3 d-flex flex-column">
+                {% if kitap.resim %}
+                    <img src="{{ kitap.resim.url }}" class="card-img-top mb-3" alt="{{ kitap.baslik }} Kapak Resmi" style="max-height: 200px; object-fit: contain;">
+                {% endif %}
+                <h4 class="card-title mt-2">{{ kitap.baslik }}</h4>
+                <p class="card-text">Yazar: {{ kitap.yazar }}</p>
+                <p class="card-text">{{ kitap.aciklama|truncatechars:100 }}</p>
+                <p class="card-text fw-bold">{{ kitap.fiyat_kurus|currency_format }} ₺</p>
+
+                <div class="mt-auto">
+                    <a href="{% url 'kullanici:giris' %}?next={{ request.path }}" class="btn btn-danger w-100">Giriş Yaparak Satın Al</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <p>Henüz hiç kitap bulunmamaktadır.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <hr class="my-5">
+
+    {# Oyunlar Bölümü #}
+    <h2 class="mb-4">Oyunlar</h2>
+    <div class="row">
+        {% for oyun in oyunlar %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 shadow-sm p-3 d-flex flex-column">
+                {# YENİ EKLENECEK KISIM #}
+                {% if oyun.resim %}
+                    <img src="{{ oyun.resim.url }}" class="card-img-top mb-3" alt="{{ oyun.baslik }} Kapak Resmi" style="max-height: 200px; object-fit: contain;">
+                {% endif %}
+                {# YENİ EKLENECEK KISIM SONU #}
+
+                <h4 class="card-title mt-2">{{ oyun.baslik }}</h4>
+                <p class="card-text">Platform: {{ oyun.platform }}</p>
+                <p class="card-text">Yapımcı: {{ oyun.yapimci }}</p>
+                <p class="card-text">{{ oyun.aciklama|truncatechars:100 }}</p>
+                <p class="card-text fw-bold">{{ oyun.fiyat_kurus|currency_format }} ₺</p>
+
+                <div class="mt-auto">
+                    <a href="{% url 'kullanici:giris' %}?next={{ request.path }}" class="btn btn-danger w-100">Giriş Yaparak Satın Al</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <p>Henüz hiç oyun bulunmamaktadır.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}

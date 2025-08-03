@@ -1,0 +1,44 @@
+{# anasayfa/templates/shop/success.html #}
+{% extends 'base.html' %}
+{% load shop_filters %}
+
+{% block title %}Ödeme Başarılı! | Odak Matik{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card text-center p-4 shadow-sm">
+                <div class="card-body">
+                    <h2 class="card-title text-success mb-3">
+                        <i class="fas fa-check-circle me-2"></i>Ödeme Başarılı!
+                    </h2>
+                    <p class="card-text fs-5 mb-4">
+                        {% if purchased_item %}
+                            <strong>{{ purchased_item.title }}{{ purchased_item.baslik }}</strong> alımınız başarıyla tamamlandı.
+                        {% else %}
+                            Alımınız başarıyla tamamlandı.
+                        {% endif %}
+                    </p>
+
+                    {# Satın alınan ürüne göre doğrudan yönlendirme butonları #}
+                    {% if product_type == 'yazilim' %}
+                        {% if purchased_item.role == 'instructor' %}
+                            <a href="{% url 'instructor:dashboard' %}" class="btn btn-primary btn-lg w-75 mx-auto mt-3">Eğitmen Yazılımına Git</a>
+                        {% elif purchased_item.role == 'student' %}
+                            <a href="{% url 'student:dashboard' %}" class="btn btn-primary btn-lg w-75 mx-auto mt-3">Öğrenci Yazılımına Git</a>
+                        {% endif %}
+                    {% elif product_type == 'kitap' %}
+                        <a href="{% url 'shop:access_kitap' slug=purchased_item.slug %}" class="btn btn-primary btn-lg w-75 mx-auto mt-3">Kitaba Git</a>
+                    {% elif product_type == 'oyun' %}
+                        <a href="{% url 'shop:access_oyun' slug=purchased_item.slug %}" class="btn btn-primary btn-lg w-75 mx-auto mt-3">Oyuna Git</a>
+                    {% else %}
+                        {# Varsayılan veya bilinmeyen bir rol durumu için #}
+                        <a href="{% url 'shop:home' %}" class="btn btn-secondary btn-lg w-75 mx-auto mt-3">Mağazaya Geri Dön</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

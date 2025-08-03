@@ -1,0 +1,73 @@
+{% load static %}
+
+<div class="flex items-center justify-center mb-10">
+    {# rounded-lg sınıfını ekledik #}
+    <img src="{% static 'img/logo.png' %}" alt="Logo" class="h-16 w-auto object-contain rounded-lg">
+</div>
+
+<nav class="flex-1">
+    <ul class="space-y-4">
+        <li>
+            <a href="{% url 'student:dashboard' %}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-700 transition duration-200 
+                {% if request.resolver_match.url_name == 'dashboard' %}bg-gray-700{% endif %}">
+                <i class="fas fa-home fa-lg"></i>
+                <span>Anasayfa</span>
+            </a>
+        </li>
+        <li>
+            {# DÜZELTİLDİ: 'trainings' yerine 'student_trainings' kullanıldı #}
+            <a href="{% url 'student:student_trainings' %}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-700 transition duration-200 
+                {% if request.resolver_match.url_name == 'student_trainings' %}bg-gray-700{% endif %}"> {# Burayı da düzelttik #}
+                <i class="fas fa-book-open fa-lg"></i>
+                <span>Eğitimler</span>
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'student:student_exercises' %}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-700 transition duration-200 
+                {% if request.resolver_match.url_name == 'student_exercises' %}bg-gray-700{% endif %}"> {# URL adı 'exercises' yerine 'student_exercises' olmalı #}
+                <i class="fas fa-dumbbell fa-lg"></i>
+                <span>Egzersizler</span>
+            </a>
+        </li>
+        {# YENİ EKLENEN: Atanan Ürünlerim #}
+        <li>
+            <a href="{% url 'student:my_assigned_products' %}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-700 transition duration-200
+                {% if request.resolver_match.url_name == 'my_assigned_products' %}bg-gray-700{% endif %}">
+                <i class="fas fa-gift fa-lg"></i> {# Hediye veya ürün ikonu #}
+                <span>Atanan Ürünlerim</span>
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'student:profile_view' %}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-700 transition duration-200
+                {% if request.resolver_match.url_name == 'profile_view' or request.resolver_match.url_name == 'profile_update' %}bg-gray-700{% endif %}">
+                <i class="fas fa-user-circle fa-lg"></i>
+                <span>Profilim</span>
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'student:logout' %}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-700 transition duration-200">
+                <i class="fas fa-sign-out-alt fa-lg"></i>
+                <span>Çıkış Yap</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+
+<div class="mt-auto pt-6 border-t border-gray-700">
+    <div class="flex items-center space-x-3 p-3">
+        {% if user.profile.profile_picture %}
+            <img src="{{ user.profile.profile_picture.url }}" alt="Profil Resmi" class="w-10 h-10 rounded-full object-cover">
+        {% else %}
+            <i class="fas fa-user-circle fa-2x text-gray-400"></i>
+        {% endif %}
+        <div>
+            {# Kullanıcının adı ve soyadı varsa onu göster, yoksa kullanıcı adını göster #}
+            {% if user.first_name and user.last_name %}
+                <p class="font-semibold">{{ user.first_name }} {{ user.last_name }}</p>
+            {% else %}
+                <p class="font-semibold">{{ user.username }}</p>
+            {% endif %}
+            <p class="text-sm text-gray-400">Öğrenci</p>
+        </div>
+    </div>
+</div>

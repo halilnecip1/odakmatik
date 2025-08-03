@@ -1,0 +1,37 @@
+{% extends 'student/student_base.html' %}
+{% load static %}
+
+{% block title %}Canlı Derslerim{% endblock title %}
+
+{% block content %}
+<div class="bg-white p-6 rounded-lg shadow-md">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6">Yaklaşan Canlı Derslerin</h1>
+
+    {% if lessons %}
+        <div class="space-y-4">
+            {% for lesson in lessons %}
+                <div class="border rounded-lg p-4 flex flex-col md:flex-row justify-between items-center">
+                    <div>
+                        <h2 class="text-xl font-semibold text-gray-700">{{ lesson.title }}</h2>
+                        <p class="text-gray-500">
+                            <i class="far fa-calendar-alt mr-2"></i>Tarih: {{ lesson.start_time|date:"d F Y" }}
+                        </p>
+                        <p class="text-gray-500">
+                            <i class="far fa-clock mr-2"></i>Saat: {{ lesson.start_time|date:"H:i" }}
+                        </p>
+                    </div>
+                    <div class="mt-4 md:mt-0">
+                        <a href="{{ lesson.meeting_url }}" target="_blank" class="px-6 py-2 bg-green-500 text-white font-bold rounded-lg hover:bg-green-600 transition duration-200">
+                            <i class="fas fa-video mr-2"></i>Derse Katıl
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center text-gray-500 p-8 border-2 border-dashed rounded-lg">
+            <p>Yaklaşan bir canlı dersiniz bulunmamaktadır.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock content %}

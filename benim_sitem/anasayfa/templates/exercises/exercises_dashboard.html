@@ -1,0 +1,47 @@
+{% extends 'student/student_base.html' %}
+{% load static %}
+
+{% block title %}Egzersizler{% endblock title %}
+
+{# --- DEĞİŞİKLİK BURADA --- #}
+{% block content %}
+
+<div class="flex flex-col min-h-screen">
+    <div class="bg-white p-4 rounded-lg shadow-md mb-6 text-center">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-800">Egzersizlere Hoş Geldin</h1>
+            <p class="text-gray-600 mt-2">Gelişimin için gereken tüm egzersiz tiplerinden dilediğini seçip başlayabilirsin.</p>
+        </div>
+    </div>
+
+    {% if categories %}
+        {% for category in categories %}
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-700 border-b pb-2 mb-4">{{ category.name }}</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                {% for game in category.games.all %}
+                    {% if game.is_active %}
+                    <div class="bg-white p-6 rounded-lg shadow-md flex flex-col items-center justify-center text-center">
+                        <i class="{{ category.icon_class|default:'fas fa-puzzle-piece' }} text-blue-500 text-6xl mb-4"></i>
+                        <h3 class="text-xl font-semibold text-gray-800">{{ game.name }}</h3>
+                        
+                        <a href="{% url 'exercises:play_game' game_slug=game.slug %}" class="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200">
+                            Başla
+                        </a>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="bg-white p-6 rounded-lg shadow-md text-center">
+            <p class="text-gray-600">Gösterilecek aktif egzersiz bulunmamaktadır. Lütfen admin panelinden bir kategori ve oyun ekleyin.</p>
+        </div>
+    {% endif %}
+</div>
+
+{# --- DEĞİŞİKLİK BURADA --- #}
+{% endblock content %}
