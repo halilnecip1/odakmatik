@@ -86,7 +86,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'django_database', # <-- Buraya Django projenizin kullanacağı DB adını yazın
         'USER': 'django_user',    # <-- Buraya Django için oluşturacağınız MySQL kullanıcı adını yazın
-        'PASSWORD': '11033225018hH', # <-- Buraya o kullanıcının şifresini yazın
+        'PASSWORD': 'MyS3cret_P@ssw0rd!', # <-- Buraya o kullanıcının şifresini yazın
         'HOST': '127.0.0.1',      # MySQL aynı sunucuda olduğu için localhost'u kullanın
         'PORT': '3306',           # MySQL'in varsayılan portu
         'OPTIONS': {
