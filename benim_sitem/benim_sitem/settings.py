@@ -2,29 +2,29 @@
 
 from pathlib import Path
 import os 
+from dotenv import load_dotenv
+
+load_dotenv()
 
 LOGIN_URL = '/kullanici/kayit/'  # senin giriş yaptığın URL neyse onu yaz
 
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-w%kx756c8$^v2g%p6l9=yjlq1ea46hp8jbn)ogkvp$ygt*p+1a'
 
-STRIPE_WEBHOOK_SECRET = 'whsec_e5183ded486a388f8f90f768e16f97e0b76f2dde1fa581a2abb82e62ded7c89f'
+#STRIPE_WEBHOOK_SECRET = 'whsec_e5183ded486a388f8f90f768e16f97e0b76f2dde1fa581a2abb82e62ded7c89f'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['3.121.41.76',
+    'localhost',
+    '127.0.0.1',
+    '192.168.1.134',]
 
 
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'student',
     'newsletter',
     'exercises',
+    'whitenoise.runserver_nostatic',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 MIDDLEWARE = [
@@ -55,6 +57,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'benim_sitem.urls'
@@ -120,8 +123,6 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
@@ -129,9 +130,10 @@ STATICFILES_DIRS = [
 
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
+
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -149,9 +151,8 @@ EMAIL_HOST = 'smtp.office365.com'  # Outlook/Office 365 için SMTP sunucusu
 # veya bazen 'smtp.live.com' veya 'smtp-mail.outlook.com' da olabilir
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True         # TLS şifrelemesi kullanılsın mı?
-EMAIL_HOST_USER = 'h@outlook.com' # Kendi Outlook/Hotmail/Live adresiniz
-EMAIL_HOST_PASSWORD = 'h' # Outlook hesabınızın şifresi
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER') # <-- YENİ EKLENDİ
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD') 
 
-# İletişim formu mesajlarının gönderileceği e-posta adresi (giden)
-DEFAULT_FROM_EMAIL = 'h@outlook.com' # Genellikle EMAIL_HOST_USER ile aynı olabilir
-SERVER_EMAIL = 'h@outlook.com' # Hata mesajları vs. için kullanılan email
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL') # <-- YENİ EKLENDİ
+SERVER_EMAIL = os.environ.get('SERVER_EMAIL') # <-- YENİ EKLENDİ
