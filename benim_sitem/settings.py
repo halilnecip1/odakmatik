@@ -142,9 +142,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-STRIPE_PUBLIC_KEY = 'pk_test_51RSfWqCiXnvhF6rqi2fyGQGm8Jm0K8m8WWUSbyCCTiXguIDHRyf6Lbi4sAqDeLg5R3G5NAxbbkp1uq4cTYmXvc5000AJuNTpGg'
+#STRIPE_PUBLIC_KEY = 'pk_test_51RSfWqCiXnvhF6rqi2fyGQGm8Jm0K8m8WWUSbyCCTiXguIDHRyf6Lbi4sAqDeLg5R3G5NAxbbkp1uq4cTYmXvc5000AJuNTpGg'
 #STRIPE_SECRET_KEY = 'sk_test_51RSfWqCiXnvhF6rqLjIHXSg9S1pnDE51Xidu3PKsmRgwzatxxqDjNVwLl0MLuxt3w3oAbw6Y8p5f1OPXlvhNjAaK00Fb9xI8Ff'
+STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY') # <-- BU SATIRI EKLEYİN
 
+# Diğer Stripe anahtarları (varsa ve .env'den alınıyorsa)
+STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_PUBLIC_KEY') # <-- Bu da .env'den alınmalı
+STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET')
 
 
 # E-POSTA AYARLARI (OUTLOOK.COM / HOTMAIL / LIVE.COM İÇİN)
