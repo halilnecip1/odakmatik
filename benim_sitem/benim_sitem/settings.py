@@ -81,19 +81,22 @@ TEMPLATES = [
 WSGI_APPLICATION = 'benim_sitem.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'django_database', # <-- Buraya Django projenizin kullanacağı DB adını yazın
+        'USER': 'root',    # <-- Buraya Django için oluşturacağınız MySQL kullanıcı adını yazın
+        'PASSWORD': '11033225018hH', # <-- Buraya o kullanıcının şifresini yazın
+        'HOST': '127.0.0.1',      # MySQL aynı sunucuda olduğu için localhost'u kullanın
+        'PORT': '3306',           # MySQL'in varsayılan portu
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        }
     }
 }
 
 
-# Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
