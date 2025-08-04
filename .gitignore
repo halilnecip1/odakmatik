@@ -12,3 +12,8 @@ mediafiles/   # kullanıcı yüklemelerinin git'e eklenmemesi için
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+echo "venv/" >> .gitignore
+echo "__pycache__/" >> .gitignore
+echo ".env" >> .gitignore
+echo "*.sqlite3" >> .gitignore
+echo "db.sqlite3" >> .gitignore
