@@ -79,25 +79,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'benim_sitem.wsgi.application'
 
-DATABASE_URL = os.environ.get('DATABASE_URL')
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL')
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.mysql',
-#        'NAME': 'django_database',
-#        'USER': 'django_user',
-#        'PASSWORD': 'MyS3cret_P@ssw0rd!',
-#        'HOST': '127.0.0.1',
-#        'PORT': '3306',
-#        'OPTIONS': {
-#            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-#        }
-#    }
 
 
 
