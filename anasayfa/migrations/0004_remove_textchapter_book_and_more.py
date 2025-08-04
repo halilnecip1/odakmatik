@@ -10,10 +10,10 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='textchapter',
-            name='book',
-        ),
+        #migrations.RemoveField(
+            #model_name='textchapter',
+            #name='book',
+        #),
         migrations.RemoveField(
             model_name='readingmistake',
             name='mistake_type',
