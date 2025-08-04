@@ -3,7 +3,6 @@
 from pathlib import Path
 import os 
 from dotenv import load_dotenv
-
 load_dotenv()
 import dj_database_url
 LOGIN_URL = '/kullanici/kayit/'  # senin giriş yaptığın URL neyse onu yaz
@@ -80,21 +79,27 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'benim_sitem.wsgi.application'
 
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'django_database', # <-- Buraya Django projenizin kullanacağı DB adını yazın
-        'USER': 'django_user',    # <-- Buraya Django için oluşturacağınız MySQL kullanıcı adını yazın
-        'PASSWORD': 'MyS3cret_P@ssw0rd!', # <-- Buraya o kullanıcının şifresini yazın
-        'HOST': '127.0.0.1',      # MySQL aynı sunucuda olduğu için localhost'u kullanın
-        'PORT': '3306',           # MySQL'in varsayılan portu
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+if DATABASE_URL:
+    DATABASES = {
+        'default': dj_database_url.config(default=DATABASE_URL)
+    }
+else:
+    # Geliştirme ortamı için MySQL ayarları
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'django_database',
+            'USER': 'django_user',
+            'PASSWORD': 'MyS3cret_P@ssw0rd!',
+            'HOST': '127.0.0.1',
+            'PORT': '3306',
+            'OPTIONS': {
+                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            }
         }
     }
-}
 
 
 
