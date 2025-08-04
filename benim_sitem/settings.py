@@ -16,7 +16,7 @@ SECRET_KEY = 'django-insecure-w%kx756c8$^v2g%p6l9=yjlq1ea46hp8jbn)ogkvp$ygt*p+1a
 
 #STRIPE_WEBHOOK_SECRET = 'whsec_e5183ded486a388f8f90f768e16f97e0b76f2dde1fa581a2abb82e62ded7c89f'
 
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*', 'odakmatik-env-v2.eba-vsch2ygp.eu-central-1.elasticbeanstalk.com',
                  '3.121.41.76',
@@ -81,25 +81,24 @@ WSGI_APPLICATION = 'benim_sitem.wsgi.application'
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
-if DATABASE_URL:
-    DATABASES = {
-        'default': dj_database_url.config(default=DATABASE_URL)
-    }
-else:
-    # Geliştirme ortamı için MySQL ayarları
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'django_database',
-            'USER': 'django_user',
-            'PASSWORD': 'MyS3cret_P@ssw0rd!',
-            'HOST': '127.0.0.1',
-            'PORT': '3306',
-            'OPTIONS': {
-                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-            }
-        }
-    }
+DATABASES = {
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL')
+    )
+}
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.mysql',
+#        'NAME': 'django_database',
+#        'USER': 'django_user',
+#        'PASSWORD': 'MyS3cret_P@ssw0rd!',
+#        'HOST': '127.0.0.1',
+#        'PORT': '3306',
+#        'OPTIONS': {
+#            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+#        }
+#    }
+
 
 
 
