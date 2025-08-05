@@ -96,14 +96,6 @@ body {
     }
 }
 
-/* Slider'ın kendi padding'ini ve margin'ini kontrol edin */
-/* slider.css'deki .hero sınıfı zaten padding içeriyor, buraya ekstra bir margin-top vermeyin */
-.hero-slider {
-    /* Genel bir margin-top: 0; eklemeye gerek kalmamalı */
-    /* Zaten body padding-top ile itildiği için üstte boşluk kalmamalı */
-}
-
-/*yenikodlar*/
 
 
 
